@@ -1,0 +1,136 @@
+﻿@model IEnumerable<TennisSim.Models.Tournament>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="~/css/TournamentsIndex.css">
+@{
+    var groupedByMonth = Model.GroupBy(t => new { t.StartDate.Year, t.StartDate.Month })
+                             .OrderBy(g => g.Key.Year)
+                             .ThenBy(g => g.Key.Month);
+
+    var distinctCategories = Model.Select(t => t.Category).Distinct();
+    var distinctSurfaces = Model.Select(t => t.Surface).Distinct();
+    var distinctLocations = Model.Select(t => t.Location).Distinct();
+
+    var surfaceImages = new Dictionary<string, string>
+    {
+        { "Clay", "/images/tournaments/clay-court.jpg" },
+        { "Hard Indoor", "/images/tournaments/hardindoor-court.jpg" },
+        { "Hard", "/images/tournaments/hard-court.jpg" },
+        { "Grass", "/images/tournaments/grass-court.jpg" },
+        { "Carpet", "/images/tournaments/carpet-court.jpg" }
+    };
+}
+
+<div class="header">
+    <h1><i class="fas fa-trophy"></i>WTA Tennis Tournaments</h1>
+</div>
+
+<div class="filters-container">
+    <div class="filters-grid">
+        <div class="filter-group">
+            <label for="category"><i class="fas fa-tags"></i> Category</label>
+            <select id="category">
+                <option value="">All Categories</option>
+                @foreach (var category in distinctCategories)
+                {
+                    <option value="@category">@category</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="surface"><i class="fas fa-layer-group"></i> Surface</label>
+            <select id="surface">
+                <option value="">All Surfaces</option>
+                @foreach (var surface in distinctSurfaces)
+                {
+                    <option value="@surface">@surface</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="country"><i class="fas fa-globe"></i> Country</label>
+            <select id="country">
+                <option value="">All Countries</option>
+                @foreach (var country in distinctLocations)
+                {
+                    <option value="@country">@country</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="date-from"><i class="fas fa-calendar-alt"></i> From Date</label>
+            <input type="date" id="date-from">
+        </div>
+
+        <div class="filter-group">
+            <label for="date-to"><i class="fas fa-calendar-check"></i> To Date</label>
+            <input type="date" id="date-to">
+        </div>
+
+        <div class="filter-buttons">
+            <button class="btn apply-filters" onclick="applyFilters()">
+                <i class="fas fa-filter"></i> Apply Filters
+            </button>
+            <button class="btn reset-filters" onclick="resetFilters()">
+                <i class="fas fa-undo"></i> Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="tournament-container">
+    @foreach (var monthGroup in groupedByMonth)
+    {
+        <div class="month-header">
+            <i class="far fa-calendar-alt"></i>
+            <h2>@(new DateTime(monthGroup.Key.Year, monthGroup.Key.Month, 1).ToString("MMMM yyyy"))</h2>
+        </div>
+
+        <div class="tournament-grid">
+            @foreach (var tournament in monthGroup)
+            {
+                <a href="@Url.Action("Details", "Tournaments", new { id = tournament.Id })"
+                   class="tournament-card"
+                   data-category="@tournament.Category"
+                   data-surface="@tournament.Surface"
+                   data-country="@tournament.Location"
+                   data-start-date="@tournament.StartDate.ToString("yyyy-MM-dd")">
+
+                    <div class="tournament-image">
+                        <div class="tournament-category-badge">@tournament.Category</div>
+                        <div class="tournament-dates">
+                            <i class="far fa-calendar"></i>
+                            @tournament.StartDate.ToString("MMM dd") - @tournament.EndDate.ToString("MMM dd")
+                        </div>
+                        <img src="@surfaceImages.GetValueOrDefault(tournament.Surface, "/images/default-court.jpg")"
+                             alt="@tournament.Surface court - @tournament.Name"
+                             loading="lazy">
+                    </div>
+
+                    <div class="tournament-info">
+                        <div class="tournament-name">@tournament.Name</div>
+                        <div class="tournament-location">
+                            <i class="fas fa-map-marker-alt"></i>@tournament.Location
+                        </div>
+                        <div class="tournament-surface">
+                            <i class="fas fa-layer-group"></i>@tournament.Surface
+                        </div>
+                        @if (tournament.QualifyingStartDate.HasValue && tournament.QualifyingEndDate.HasValue)
+                        {
+                            <div class="tournament-qualifying">
+                                <i class="fas fa-calendar-alt"></i>
+                                Qualifying: @tournament.QualifyingStartDate.Value.ToString("MMM dd") - @tournament.QualifyingEndDate.Value.ToString("MMM dd")
+                            </div>
+                        }
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/tournaments.js"></script>
+}

@@ -1,0 +1,27 @@
+﻿@model TennisSim.Models.UserName
+@{
+    ViewData["Title"] = "New Game";
+}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/GameStartNew.css">
+</head>
+
+<div class="wta-container">
+    <div class="champion-card">
+        <div class="wta-logo">
+            <i class="fas fa-trophy"></i>
+        </div>
+        <h1>WTA Championship</h1>
+        <div class="player-name">@Model.Username</div>
+        <p>Step onto the court and claim your place among tennis legends.</p>
+        <a href="@Url.Action("Start", "Game", new { username = Model.Username })" class="championship-btn">
+            <i class="fas fa-crown"></i>
+            Enter Journey
+        </a>
+        <div class="tournament-info">
+            <span>Grand Slam Ready</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,171 @@
+﻿@model TennisSim.Models.GameStartViewModel
+@{
+    ViewData["Title"] = "Tennis Dashboard";
+}
+
+<link rel="stylesheet" href="~/css/GameStartx.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<nav class="nav">
+    <div class="container">
+        <div class="nav-content">
+            <h1 class="logo">TennisSim</h1>
+            <div class="nav-user">
+                <i class="fas fa-bell nav-icon"></i>
+                <div class="user-info">
+                    <i class="fas fa-user-circle nav-icon"></i>
+                    <span>@Model.Username</span>
+                </div>
+                <div class="user-dropdown">
+                    <button class="dropdown-btn" id="userDropdown">
+                        <i class="fas fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="/GameStart/Logout" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="main">
+    <div class="container">
+        <div class="date-card">
+            <div class="date-content">
+                <div class="date-info">
+                    <div class="date-label">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="currentDay">@Model.CurrentDate.ToString("dddd")</span>
+                    </div>
+                    <div class="date-display" id="currentDate">@Model.CurrentDate.ToString("MMMM dd, yyyy")</div>
+                </div>
+                <button class="next-btn" id="nextDayBtn">
+                    <i class="fas fa-forward"></i>
+                    Next Day
+                </button>
+            </div>
+        </div>
+
+        <div id="alertContainer" style="display: none;"></div>
+
+        <div class="cards-grid">
+            <a href="/Player/Index" class="feature-card">
+                <i class="fas fa-chart-line card-icon"></i>
+                <h3 class="card-title">Rankings</h3>
+                <p class="card-desc">Player Rankings & Statistics</p>
+                <div class="card-link">
+                    View Details <i class="fas fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <a href="/Tournaments/Index" class="feature-card">
+                <i class="fas fa-trophy card-icon"></i>
+                <h3 class="card-title">Tournaments</h3>
+                <p class="card-desc">Browse & Manage Tournaments</p>
+                <div class="card-link">
+                    View Details <i class="fas fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <a href="/Draw/Index" class="feature-card">
+                <i class="fas fa-sitemap card-icon"></i>
+                <h3 class="card-title">Tournament Draw</h3>
+                <p class="card-desc">View Tournament Brackets</p>
+                <div class="card-link">
+                    View Details <i class="fas fa-chevron-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nextDayBtn = document.getElementById('nextDayBtn');
+            const currentDate = document.getElementById('currentDate');
+            const currentDay = document.getElementById('currentDay');
+            const alertContainer = document.getElementById('alertContainer');
+            const userDropdown = document.getElementById('userDropdown');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+
+            userDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+
+            document.addEventListener('click', function() {
+                dropdownMenu.classList.remove('show');
+            });
+
+            function showAlert(message, type = 'success') {
+                const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+                alertContainer.innerHTML = `
+                    <div class="alert-container ${alertClass}">
+                        <span class="alert-message">${message}</span>
+                        <button class="alert-close" onclick="this.parentElement.parentElement.style.display='none'">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                alertContainer.style.display = 'block';
+
+                setTimeout(() => {
+                    alertContainer.style.display = 'none';
+                }, 4000);
+            }
+
+            nextDayBtn.addEventListener('click', function() {
+                const btn = this;
+                btn.classList.add('loading');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                btn.disabled = true;
+
+                fetch('/Game/IncrementDay', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        userId: '@Model.Username'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+
+                    if (data.success) {
+                        currentDate.textContent = data.newDate;
+                        currentDay.textContent = data.newDay;
+
+                        btn.classList.add('success');
+                        btn.innerHTML = '<i class="fas fa-check"></i> Updated';
+
+                        showAlert('Date updated successfully!', 'success');
+
+                        setTimeout(() => {
+                            btn.classList.remove('success');
+                            btn.innerHTML = '<i class="fas fa-forward"></i> Next Day';
+                        }, 2000);
+                    } else {
+                        showAlert(data.message || 'Failed to update date', 'error');
+                        btn.innerHTML = '<i class="fas fa-forward"></i> Next Day';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-forward"></i> Next Day';
+                    showAlert('An error occurred while updating the date', 'error');
+                });
+            });
+        });
+    </script>
+}

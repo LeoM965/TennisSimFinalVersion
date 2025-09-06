@@ -1,0 +1,59 @@
+﻿@model IEnumerable<TennisSim.Models.Draw>
+
+<link href="~/css/DrawIndex.css" rel="stylesheet" />
+
+<div class="tournament-section">
+    <h2 class="section-heading">Tournament Draws</h2>
+
+    @if (Model.Any())
+    {
+        <div class="tournament-container">
+            <table class="tournament-table">
+                <thead>
+                    <tr>
+                        <th>Tournament</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Draw draw in Model)
+                    {
+                        <tr>
+                            <td>
+                                <span class="tournament-name">@draw.Tournament.Name</span>
+                            </td>
+                            <td class="tournament-date">
+                                @draw.Tournament.StartDate.ToString("MMM d, yyyy")
+                            </td>
+                            <td>
+                                @{
+                                    string categoryClass = draw.Tournament.Category.ToString().Replace(" ", "").ToLowerInvariant();
+                                }
+                                <span class="category-badge @categoryClass">
+                                    @draw.Tournament.Category
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/Draw/Draw?id=@draw.Id" class="btn-view">
+                                    View Draw
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="tournament-container">
+            <div class="empty-state">
+                <div class="empty-state-icon">📅</div>
+                <h3>No Tournament Draws Available</h3>
+                <p>Check back soon for upcoming tournament draws.</p>
+            </div>
+        </div>
+    }
+</div>

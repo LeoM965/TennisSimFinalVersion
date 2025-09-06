@@ -1,0 +1,266 @@
+﻿<div id="simulationResults" class="d-none">
+    <div class="card match-summary">
+        <div class="card-header">
+            <h4>Match Summary</h4>
+        </div>
+        <div class="card-body">
+            <div class="score-container">
+                <div class="player-names">
+                    <span>@Model.Match.Player1?.Name <span class="serve-indicator">🎾</span></span>
+                    <span>@Model.Match.Player2?.Name <span class="serve-indicator">🎾</span></span>
+                </div>
+                <div class="score-display">
+                    <div class="score-row">
+                        <div class="score-label">Sets:</div>
+                        <div id="currentSets" class="current-score"></div>
+                    </div>
+                    <div class="score-row">
+                        <div class="score-label">Games:</div>
+                        <div id="currentGames" class="current-score"></div>
+                    </div>
+                    <div class="score-row">
+                        <div class="score-label">Current:</div>
+                        <div id="currentGame" class="current-score"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="results-grid">
+        <div class="card">
+            <div class="card-header set-scores-header">
+                <h4>Set Scores</h4>
+            </div>
+            <div class="card-body">
+                <div id="setScores" class="content-area"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header game-points-header">
+                <h4>Current Game</h4>
+            </div>
+            <div class="card-body">
+                <div id="currentGamePoints" class="content-area"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header match-history-header">
+            <h4>Match History</h4>
+        </div>
+        <div class="card-body">
+            <div id="matchHistory" class="match-history"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        background: white;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 1.5rem;
+        border: none;
+        font-weight: 600;
+        color: white;
+    }
+
+    .match-summary .card-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .set-scores-header {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+    }
+
+    .game-points-header {
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+    }
+
+    .match-history-header {
+        background: linear-gradient(135deg, #434343, #000);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .score-container {
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+        border-radius: 16px;
+        padding: 1.5rem;
+        color: white;
+    }
+
+    .player-names {
+        display: flex;
+        justify-content: space-between;
+        font: 700 1.3rem/1.2 inherit;
+        margin-bottom: 1.5rem;
+    }
+
+    .score-display {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 1.5rem;
+    }
+
+    .score-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+        .score-row:last-child {
+            border-bottom: none;
+        }
+
+    .score-label {
+        font: 600 1.1rem inherit;
+    }
+
+    .current-score {
+        font: 800 2rem inherit;
+    }
+
+    .results-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .content-area {
+        min-height: 200px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .match-history {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .set-header {
+        font-weight: 700;
+        margin: 1rem 0 0.5rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, #a8edea, #fed6e3);
+        border-radius: 8px;
+        color: #2d3748;
+    }
+
+    .game-header {
+        font-weight: 600;
+        margin: 0.75rem 0;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, #ffecd2, #fcb69f);
+        border-radius: 6px;
+        color: #2d3748;
+    }
+
+    .point-score {
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        border-left: 4px solid #3b82f6;
+        border-radius: 6px;
+        transition: transform 0.2s ease;
+    }
+
+        .point-score:hover {
+            transform: translateX(4px);
+        }
+
+    .set-score-item {
+        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid #10b981;
+    }
+
+    .point-item {
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid #3b82f6;
+    }
+
+    .game-result, .set-result {
+        font-weight: 700;
+        color: #059669;
+        margin: 1rem 0;
+        padding: 1rem;
+        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        border: 2px solid #10b981;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .serve-indicator {
+        display: none;
+        animation: pulse 1s infinite;
+    }
+
+    .winner-section {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: white;
+        padding: 2rem;
+        border-radius: 16px;
+        text-align: center;
+        margin: 1rem 0;
+        box-shadow: 0 20px 40px rgba(245,158,11,0.3);
+    }
+
+        .winner-section h2 {
+            font: 800 2.5rem inherit;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+    @@keyframes pulse {
+        0%, 100%
+
+    {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .results-grid
+
+    {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .current-score {
+        font-size: 1.5rem;
+    }
+
+    .player-names {
+        font-size: 1.1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+
+    }</style>

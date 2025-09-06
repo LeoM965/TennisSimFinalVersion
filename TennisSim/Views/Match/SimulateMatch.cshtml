@@ -1,0 +1,66 @@
+﻿@model MatchViewModel
+@{
+    ViewData["Title"] = "Tennis Match Simulation";
+}
+
+<link rel="stylesheet" href="~/css/TennisMatch.css" />
+
+<div class="tennis-match">
+    <div class="container">
+        <h1 class="text-center mb-4">Tennis Match Simulation</h1>
+        @if (Model?.Match == null)
+        {
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                Match data is not available.
+            </div>
+        }
+        else
+        {
+            <partial name="_MatchHeader" model="Model" />
+            <partial name="_MatchControls" model="Model" />
+            <partial name="_MatchDisplay" model="Model" />
+
+            <div class="row mb-4">
+                @foreach (var (player, attributes) in new[] {
+            (Model.Match.Player1, Model.Player1Attributes),
+            (Model.Match.Player2, Model.Player2Attributes)
+            })
+                {
+                    <div class="col-md-6">
+                        <div class="player-card card">
+                            <div class="card-header">
+                                <h3 class="mb-0">@(player?.Name ?? "Player")</h3>
+                            </div>
+                            <div class="card-body">
+                                @if (attributes?.Any() == true)
+                                {
+                                    foreach (var attr in attributes)
+                                    {
+                                        <div class="attribute-item mb-3">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>@attr.AttributeType</span>
+                                                <span>@attr.Value%</span>
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar" style="width: @attr.Value%"></div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <p class="text-muted">No statistics available</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/TennisMatchSimulator.js"></script>
+}

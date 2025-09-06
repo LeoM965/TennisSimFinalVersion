@@ -1,0 +1,209 @@
+﻿:root {
+    --tennis-blue: #1E3A8A;
+    --tennis-light-blue: #3B82F6;
+    --tennis-accent: #EF4444;
+    --tennis-green: #10B981;
+    --white: #FFFFFF;
+    --gray-50: #F8FAFC;
+    --gray-100: #F1F5F9;
+    --gray-300: #CBD5E1;
+    --gray-600: #475569;
+    --gray-900: #0F172A;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --radius: 8px;
+    --radius-lg: 16px;
+}
+
+.tennis-match {
+    background: var(--gray-50);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+    .tennis-match .container h1 {
+        background: linear-gradient(135deg, var(--tennis-blue) 0%, var(--tennis-light-blue) 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+        font-size: clamp(2rem, 4vw, 3rem);
+        margin-bottom: 3rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+.player-card {
+    height: 100%;
+    transition: var(--transition);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    background: var(--white);
+    border: 1px solid var(--gray-300);
+    position: relative;
+}
+
+    .player-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--tennis-blue) 0%, var(--tennis-light-blue) 100%);
+        z-index: 1;
+    }
+
+    .player-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .player-card .card-header {
+        background: linear-gradient(135deg, var(--tennis-blue) 0%, var(--tennis-light-blue) 100%);
+        color: var(--white);
+        padding: 1.5rem;
+        font-weight: 700;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .player-card .card-header::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translateY(-50%);
+        }
+
+        .player-card .card-header h3 {
+            font-size: 1.5rem;
+            margin: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+    .player-card .card-body {
+        padding: 2rem 1.5rem;
+    }
+
+.attribute-item {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    transition: var(--transition);
+    border: 1px solid transparent;
+    position: relative;
+}
+
+    .attribute-item:hover {
+        background: var(--white);
+        border-color: var(--tennis-light-blue);
+        box-shadow: var(--shadow);
+        transform: translateX(4px);
+    }
+
+    .attribute-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .attribute-item .d-flex {
+        margin-bottom: 0.75rem;
+    }
+
+    .attribute-item span:first-child {
+        font-weight: 600;
+        color: var(--gray-900);
+        font-size: 0.95rem;
+    }
+
+    .attribute-item span:last-child {
+        font-weight: 700;
+        color: var(--tennis-blue);
+        font-size: 1rem;
+    }
+
+.progress {
+    height: 1rem;
+    border-radius: 20px;
+    background: var(--gray-300);
+    overflow: hidden;
+    margin-top: 0.75rem;
+    position: relative;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--tennis-blue) 0%, var(--tennis-light-blue) 50%, var(--tennis-green) 100%);
+    transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+}
+
+    .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.3) 50%, transparent 60%);
+        animation: shimmer 2s infinite;
+    }
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, var(--tennis-accent) 0%, #DC2626 100%);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+    .alert-danger i {
+        font-size: 1.2rem;
+        margin-right: 0.5rem;
+    }
+
+.text-muted {
+    color: var(--gray-600) !important;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .tennis-match {
+        padding: 1rem 0;
+    }
+
+    .player-card .card-body {
+        padding: 1.5rem 1rem;
+    }
+
+    .attribute-item {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .progress {
+        height: 0.875rem;
+    }
+}

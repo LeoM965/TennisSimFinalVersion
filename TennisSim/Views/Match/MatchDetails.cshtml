@@ -1,0 +1,181 @@
+﻿@{
+    ViewData["Title"] = "Tennis Head-to-Head";
+    var players = new[] {
+        new { Name = Model.Player1Name, Id = Model.Player1Id, Nationality = Model.Player1Nationality, Wins = Model.Player1Wins },
+        new { Name = Model.Player2Name, Id = Model.Player2Id, Nationality = Model.Player2Nationality, Wins = Model.Player2Wins }
+    }.Where(p => !string.IsNullOrEmpty(p.Name));
+}
+
+<link rel="stylesheet" href="~/css/MatchDetails.css" />
+
+<div class="container">
+    <header class="header">
+        <h1>@ViewData["Title"]</h1>
+    </header>
+
+    @if (Model != null)
+    {
+        <section class="players">
+            @foreach (var player in players)
+            {
+                <div class="player">
+                    <img src="/images/PlayersPhotos/@(player.Name).webp"
+                         alt="@player.Name"
+                         onerror="this.src='/images/default-player.webp'">
+                    <h2>
+                        @if (player.Nationality?.Code != null)
+                        {
+                            <img src="/images/svg/@(player.Nationality.Code.ToLower()).svg"
+                                 class="flag" alt="@player.Nationality.Name"
+                                 onerror="this.style.display='none'">
+                        }
+                        <a href="/Player/Details/@player.Id">@player.Name</a>
+                    </h2>
+                    <div class="wins">@player.Wins</div>
+                    <small>Total Wins</small>
+                </div>
+            }
+        </section>
+
+        <section class="section">
+            <h2>Matches by Round</h2>
+            <table>
+                <thead>
+                    <tr><th>Round</th><th>Count</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var stat in Model.RoundStats ?? new Dictionary<string, int>())
+                    {
+                        <tr><td>@stat.Key</td><td>@stat.Value</td></tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>Match History</h2>
+            <table>
+                <thead>
+                    <tr><th>Date</th><th>Tournament</th><th>Round</th><th>Score</th><th>Winner</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var match in Model.HeadToHeadMatches ?? Enumerable.Empty<Match>())
+                    {
+                        <tr>
+                            <td>@match.Date.ToString("dd/MM/yyyy")</td>
+                            <td>@(match.Draw?.Tournament?.Name ?? "N/A")</td>
+                            <td>@match.Round</td>
+                            <td>@CleanScore(match.Score)</td>
+                            <td>@(match.Winner?.Name ?? "N/A")</td>
+                            <td>@match.Status</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>Point by Point Details</h2>
+            @foreach (var match in Model.HeadToHeadMatches ?? Enumerable.Empty<Match>())
+            {
+                <div class="match-box">
+                    <div class="match-header" onclick="toggleMatch(this)">
+                        <span>@match.Date.ToString("dd/MM/yyyy") - @(match.Draw?.Tournament?.Name ?? "Unknown")</span>
+                        <span class="toggle">+</span>
+                    </div>
+                    <div class="match-details">
+                        @{
+                            RenderPointByPoint(match.Score, Model.Player1Name, Model.Player2Name);
+                        }
+                    </div>
+                </div>
+            }
+        </section>
+    }
+    else
+    {
+        <div class="error">No data available</div>
+    }
+</div>
+
+<script>
+    function toggleMatch(element) {
+        const details = element.nextElementSibling;
+        const icon = element.querySelector('.toggle');
+        const isActive = details.classList.toggle('active');
+
+        icon.textContent = isActive ? '−' : '+';
+        icon.style.transform = isActive ? 'rotate(180deg)' : 'rotate(0deg)';
+        element.classList.toggle('expanded', isActive);
+    }
+
+    function toggleSet(element) {
+        const details = element.nextElementSibling;
+        const icon = element.querySelector('.toggle-icon');
+        const isActive = details.classList.toggle('active');
+
+        icon.textContent = isActive ? '−' : '+';
+    }
+</script>
+
+@functions {
+    string CleanScore(string score)
+    {
+        if (string.IsNullOrEmpty(score)) return "N/A";
+        return string.Join(" ", score.Split(',').Select(s => s.Split('[')[0].Trim()));
+    }
+
+    void RenderPointByPoint(string score, string player1Name, string player2Name)
+    {
+        if (string.IsNullOrEmpty(score) || string.IsNullOrEmpty(player1Name) || string.IsNullOrEmpty(player2Name))
+            return;
+
+        var sets = score.Split(',');
+        for (int setIndex = 0; setIndex < sets.Length; setIndex++)
+        {
+            var setParts = sets[setIndex].Split('[', 2);
+            if (setParts.Length <= 1) continue;
+
+            var setScore = setParts[0].Trim();
+            var gamesData = setParts[1].TrimEnd(']').Split('|');
+
+            <div class="game-box">
+                <div class="set-header" onclick="toggleSet(this)">
+                    <span>Set @(setIndex + 1) - @setScore</span>
+                    <span class="toggle-icon">+</span>
+                </div>
+                <div class="set-details">
+                    @{
+                        int player1Games = 0, player2Games = 0;
+                    }
+                    @for (int gameIndex = 0; gameIndex < gamesData.Length; gameIndex++)
+                    {
+                        var points = gamesData[gameIndex].Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                        if (!points.Any()) continue;
+
+                        <div class="game-number">Game @(gameIndex + 1)</div>
+                        <div class="point-sequence">
+                            @foreach (var point in points)
+                            {
+                                var cleanPoint = point.Trim('[', ']');
+                                <span class="point">@cleanPoint</span>
+
+                                @if (cleanPoint.EndsWith("-Game"))
+                                {
+                                    player2Games++;
+                                }
+                                else if (cleanPoint.StartsWith("Game-"))
+                                {
+                                    player1Games++;
+                                }
+                            }
+                        </div>
+                        <div class="game-summary">
+                            <span class="score-summary">@player1Name @player1Games - @player2Name @player2Games</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+}

@@ -1,0 +1,123 @@
+﻿<div class="match-controls-wrapper">
+    <div class="match-controls">
+        <button id="simulateBtn"
+                class="control-btn primary-btn"
+                data-match-id="@Model.Match.Id"
+                data-player1="@Model.Match.Player1?.Name"
+                data-player2="@Model.Match.Player2?.Name">
+            <i class="fas fa-play-circle"></i>
+            Start Match Simulation
+        </button>
+
+        <button id="skipToResultBtn" class="control-btn secondary-btn">
+            <i class="fas fa-forward"></i>
+            Skip to Result
+        </button>
+    </div>
+</div>
+
+<style>
+    .match-controls-wrapper {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        padding: 2rem;
+        margin: 1.5rem 0;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+    }
+
+    .match-controls {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .control-btn {
+        padding: 1.2rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 50px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        min-width: 220px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .control-btn:hover::before {
+            left: 100%;
+        }
+
+    .primary-btn {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+    }
+
+        .primary-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(40,167,69,0.4);
+        }
+
+        .primary-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+    .secondary-btn {
+        background: white;
+        color: #495057;
+        border: 2px solid #dee2e6;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+        .secondary-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #adb5bd;
+        }
+
+    .control-btn i {
+        font-size: 1.3rem;
+    }
+
+    @@media (max-width: 576px) {
+        .match-controls
+
+    {
+        gap: 1rem;
+        flex-direction: column;
+    }
+
+    .control-btn {
+        width: 100%;
+        min-width: unset;
+        padding: 1rem 2rem;
+    }
+
+    .match-controls-wrapper {
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+
+    }</style>

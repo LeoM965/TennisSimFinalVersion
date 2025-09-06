@@ -1,0 +1,148 @@
+﻿@model TournamentScheduleViewModel
+@{
+    var currentDay = Model.Schedule.FirstOrDefault();
+    var hasSchedule = Model.Schedule.Any();
+}
+
+<link rel="stylesheet" href="~/css/TournamentsSchedule.css" />
+<script src="~/js/schedule.js"></script>
+
+<div class="tournament-schedule">
+    <header>
+        <h1>@Model.TournamentName</h1>
+        <form method="get">
+            <input type="hidden" name="id" value="@Model.TournamentId" />
+            <select name="date" onchange="this.form.submit()">
+                @foreach (var date in Model.AvailableDates?.OrderByDescending(d => d) ?? Enumerable.Empty<DateTime>())
+                {
+                    <option value="@date.ToString("yyyy-MM-dd")" selected="@(date.Date == Model.SelectedDate.Date)">
+                        @date.ToString("d MMMM yyyy")
+                    </option>
+                }
+            </select>
+        </form>
+        @if (Model.CurrentDate.Date == Model.SelectedDate.Date)
+        {
+            <div class="day-status @(Model.HasUnplayedMatches ? "warning" : "success")">
+                <div class="status-icon">@(Model.HasUnplayedMatches ? "⚠" : "✓")</div>
+                <div>
+                    @(Model.HasUnplayedMatches ?
+                        "There are unplayed matches scheduled for today. Complete all matches to advance to the next day." :
+                        "All matches for today are complete. You can now advance to the next day.")
+                </div>
+            </div>
+        }
+    </header>
+
+    @if (!hasSchedule)
+    {
+        <div class="notice">Schedule not yet available for selected date</div>
+    }
+    else
+    {
+        <nav class="days-nav">
+            @foreach (var day in Model.Schedule)
+            {
+                var hasUnplayed = day.ScheduledMatches.Any(m =>
+                m.Status != MatchStatus.Completed &&
+                m.Status != MatchStatus.Cancelled &&
+                m.Status != MatchStatus.Walkover);
+
+                <button class="day-btn @(day == currentDay ? "active" : "")" data-date="@day.Date.ToString("yyyy-MM-dd")">
+                    <span>@day.Date.ToString("ddd")</span>
+                    <strong>@day.Date.ToString("dd")</strong>
+                    @if (hasUnplayed)
+                    {
+                        <span class="pending">●</span>
+                    }
+                </button>
+            }
+        </nav>
+
+        @foreach (var day in Model.Schedule)
+        {
+            <section class="day-schedule @(day == currentDay ? "active" : "")" id="schedule-@day.Date.ToString("yyyy-MM-dd")">
+                @foreach (var match in day.ScheduledMatches.OrderBy(m => m.StartTime).ThenBy(m => m.Court))
+                {
+                    var isCurrentDay = Model.CurrentDate.Date == day.Date.Date;
+                    var canSimulate = isCurrentDay &&
+                    match.Status != MatchStatus.Completed &&
+                    match.Status != MatchStatus.Cancelled &&
+                    match.Status != MatchStatus.Walkover;
+                    var needsSimulation = match.Status == MatchStatus.Scheduled && isCurrentDay;
+
+                    <article class="match @(needsSimulation ? "needs-simulation" : "")"
+                             data-status="@match.Status.ToString().ToLower()"
+                             data-match-id="@match.Id">
+
+                        <div class="match-time">
+                            <time>@match.StartTime.ToString("HH:mm")</time>
+                            <small>Court @match.Court • @match.Round</small>
+                        </div>
+
+                        <div class="match-details">
+                            @if (match.DrawMatch?.Player1 != null && match.DrawMatch?.Player2 != null)
+                            {
+                                var p1 = match.DrawMatch.Player1;
+                                var p2 = match.DrawMatch.Player2;
+                                var p1Prob = 1 / (1 + Math.Exp((p1.Ranking - p2.Ranking) / 100.0));
+                                var p2Prob = 1 - p1Prob;
+
+                                <div class="player @(match.DrawMatch.Player1SeedNumber.HasValue ? "seeded" : "")">
+                                    @if (match.DrawMatch.Player1SeedNumber.HasValue)
+                                    {
+                                        <span class="seed">[@match.DrawMatch.Player1SeedNumber]</span>
+                                    }
+                                    <strong>@p1.Name</strong>
+                                    <span class="odds">@(Math.Round(p1Prob * 100, 1))% (@Math.Round(1 / p1Prob, 2))</span>
+                                </div>
+                                <div class="player @(match.DrawMatch.Player2SeedNumber.HasValue ? "seeded" : "")">
+                                    @if (match.DrawMatch.Player2SeedNumber.HasValue)
+                                    {
+                                        <span class="seed">[@match.DrawMatch.Player2SeedNumber]</span>
+                                    }
+                                    <strong>@p2.Name</strong>
+                                    <span class="odds">@(Math.Round(p2Prob * 100, 1))% (@Math.Round(1 / p2Prob, 2))</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="tbd">To Be Determined</div>
+                            }
+                        </div>
+
+                        <div class="match-status">
+                            @if (match.Status == MatchStatus.Completed && match.DrawMatch?.Match != null)
+                            {
+                                var winner = match.DrawMatch.Winner;
+                                var p1 = match.DrawMatch.Player1;
+                                var p2 = match.DrawMatch.Player2;
+                                var score = string.Join(" ", match.DrawMatch.Match.Score.Split(',').Select(s => s.Split('[')[0].Trim()));
+
+                                <div class="result">
+                                    <div class="@(winner.Id == p1.Id ? "winner" : "loser")">@p1.Name</div>
+                                    <div class="@(winner.Id == p2.Id ? "winner" : "loser")">@p2.Name</div>
+                                    <strong>@score</strong>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="status @match.Status.ToString().ToLower()">@match.Status</span>
+                            }
+                        </div>
+
+                        @if (canSimulate)
+                        {
+                            <div class="actions">
+                                <a href="@Url.Action("MatchDetails", "Match", new { drawMatchId = match.DrawMatchId })"
+                                   class="btn @(needsSimulation ? "pulse" : "")">Details</a>
+                                <a href="@Url.Action("SimulateMatch", "Match", new { matchId = match.Id })"
+                                   class="btn simulate">Simulate</a>
+                            </div>
+                        }
+                    </article>
+                }
+            </section>
+        }
+    }
+</div>

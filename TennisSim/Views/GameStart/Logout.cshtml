@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Logout - Tennis Sim";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="~/css/GameStartLogout.css">
+
+<div class="logout-card">
+    <div class="logout-icon">
+        <i class="fas fa-sign-out-alt"></i>
+    </div>
+    <h1>Session Ended</h1>
+    <p class="logout-message">You have been successfully logged out from TennisSim.</p>
+
+    <div class="action-buttons">
+        <a href="/GameStart/EnterUsername" class="btn btn-primary">
+            <i class="fas fa-user"></i>
+            New Game
+        </a>
+        <a href="/" class="btn btn-secondary">
+            <i class="fas fa-home"></i>
+            Home
+        </a>
+    </div>
+
+    <p class="farewell">Thank you for playing!</p>
+</div>

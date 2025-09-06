@@ -1,0 +1,38 @@
+﻿@model List<TennisSim.Models.Player>
+<link rel="stylesheet" type="text/css" href="~/css/PlayerRanking.css" />
+<div class="container my-5">
+    <h2 class="text-center my-4">Player Rankings</h2>
+    <div class="rankings-table">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Birth</th>
+                    <th>Country</th>
+                    <th>Points</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var player in Model)
+                {
+                    <tr>
+                        <td><span class="rank">@player.Ranking</span></td>
+                        <td class="player-name">@player.Name</td>
+                        <td>@player.YearOfBirth</td>
+                        <td class="country">
+                            <img src="/images/svg/@(player.Nationality.Code.ToLower()).svg" alt="@player.Nationality.Name" title="@player.Nationality.Name">
+                            <span>@player.Nationality.Name</span>
+                        </td>
+                        <td class="points">@player.LatestPoints</td>
+                        <td><span class="status @(player.Active ? "active" : "inactive")">@(player.Active ? "Active" : "Inactive")</span></td>
+                        <td><a href="@Url.Action("Details", "Player", new { id = player.Id })" class="btn-view">View</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="~/js/PlayerRanking.js"></script>

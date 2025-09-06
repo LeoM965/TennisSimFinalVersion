@@ -1,0 +1,228 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+}
+
+.col-md-6 {
+    width: 100%;
+}
+
+.card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(59, 130, 246, 0.1);
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
+    }
+
+.card-header {
+    background: #3b82f6;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+    .card-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    }
+
+.card-title {
+    color: white;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.card-body {
+    padding: 2.5rem;
+}
+
+.form-group {
+    margin-bottom: 2rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+
+    .form-control:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .form-control::placeholder {
+        color: #9ca3af;
+    }
+
+.d-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+    .btn-primary:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+
+.btn-outline-secondary {
+    background: transparent;
+    color: #64748b;
+    border: 2px solid #e2e8f0;
+}
+
+    .btn-outline-secondary:hover {
+        background: #f1f5f9;
+        color: #475569;
+        border-color: #cbd5e1;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+.text-danger {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    border-left: 4px solid #ef4444;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-primary:disabled {
+    background: #94a3b8;
+}
+
+.btn:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+.form-control.is-invalid {
+    border-color: #ef4444;
+    background: #fef2f2;
+}
+
+.form-control.is-valid {
+    border-color: #10b981;
+    background: #f0fdf4;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0.5rem;
+    }
+
+    .card-header {
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .form-control {
+        padding: 0.875rem 1rem;
+    }
+
+    .btn {
+        padding: 0.875rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-header {
+        padding: 1.25rem;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+    }
+}

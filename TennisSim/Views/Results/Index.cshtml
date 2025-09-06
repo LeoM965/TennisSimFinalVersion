@@ -1,0 +1,105 @@
+﻿@model Tournament
+
+<link href="~/css/ResultsIndex.css" rel="stylesheet" />
+
+@{
+    if (Model == null) return;
+
+    var draw = Model.Draws?.FirstOrDefault();
+    var matches = draw?.DrawMatches?.Where(dm => dm.Match != null && !dm.IsBye);
+    var hasMatches = matches?.Any() == true;
+    var matchesByDate = hasMatches ? matches.GroupBy(dm => dm.Match.Date.Date).OrderBy(g => g.Key) : null;
+
+    void RenderPlayer(dynamic player, int? seed, bool winner = false)
+    {
+        <div class="player @(winner ? "winner" : "")">
+            @if (player?.Nationality?.Code != null)
+            {
+                <img src="/images/svg/@(player.Nationality.Code.ToLower()).svg"
+                     alt="@player.Nationality.Name" class="flag" loading="lazy">
+            }
+            <span>@(player?.Name ?? "TBD")</span>
+            @if (seed.HasValue)
+            {
+                <small>(@seed)</small>
+            }
+        </div>
+    }
+}
+
+<div class="tournament">
+    <header>
+        <div class="title">
+            <h1>@Model.Name</h1>
+            <div class="tags">
+                <span>@Model.Category</span>
+                <span>@Model.Surface</span>
+            </div>
+        </div>
+        <div class="meta">
+            <span>@Model.Location</span>
+            <span>@Model.StartDate.ToString("dd MMM") - @Model.EndDate.ToString("dd MMM yyyy")</span>
+            @if (Model.QualifyingStartDate.HasValue && Model.QualifyingEndDate.HasValue)
+            {
+                <span>Qualifying: @Model.QualifyingStartDate.Value.ToString("dd MMM") - @Model.QualifyingEndDate.Value.ToString("dd MMM")</span>
+            }
+        </div>
+    </header>
+
+    @if (hasMatches)
+    {
+        <div class="stats">
+            <div><span>@draw.DrawSize</span><small>Draw Size</small></div>
+            <div><span>@draw.SeedCount</span><small>Seeds</small></div>
+            <div><span>@draw.ByeCount</span><small>Byes</small></div>
+        </div>
+
+        @foreach (var day in matchesByDate)
+        {
+            <section class="day">
+                <h2>@day.Key.ToString("dddd, dd MMM yyyy")</h2>
+                <div class="matches">
+                    @foreach (var dm in day.OrderBy(x => x.Match.Date.TimeOfDay))
+                    {
+                        var match = dm.Match;
+                        var isCompleted = match.Status == MatchStatus.Completed && !string.IsNullOrEmpty(match.Score);
+                        var isLive = match.Status == MatchStatus.InProgress;
+
+                        <article class="match @(isLive ? "live" : "")" data-id="@match.Id">
+                            <time datetime="@match.Date.ToString("yyyy-MM-ddTHH:mm")">@match.Date.ToString("HH:mm")</time>
+                            <div class="players">
+                                @{
+                                    RenderPlayer(dm.Player1, dm.Player1SeedNumber, isCompleted && match.WinnerId == dm.Player1Id);
+                                }
+                                @if (!isCompleted)
+                                {
+                                    <div class="vs">@(isLive ? "LIVE" : "VS")</div>
+                                }
+                                @{
+                                    RenderPlayer(dm.Player2, dm.Player2SeedNumber, isCompleted && match.WinnerId == dm.Player2Id);
+                                }
+                                @if (isCompleted && !string.IsNullOrWhiteSpace(match.Score))
+                                {
+                                    <div class="score">
+                                        @foreach (var set in match.Score.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Split('[')[0].Trim()).Where(s => !string.IsNullOrEmpty(s)))
+                                        {
+                                            <span>@set</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <a href="@Url.Action("MatchDetails", "Match", new { drawMatchId = dm.Id })" aria-label="View match details">→</a>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+    }
+    else
+    {
+        <div class="empty">
+            <h3>No Matches Available</h3>
+            <p>The tournament draw has not been generated yet or no matches are currently scheduled.</p>
+        </div>
+    }
+</div>

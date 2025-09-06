@@ -1,0 +1,175 @@
+﻿@model TennisSim.Models.Draw
+
+<link href="~/css/DrawDraw.css" rel="stylesheet" />
+
+@if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="tournament-draw">
+    <div class="tournament-header">
+        <div class="header-content">
+            <div class="title-section">
+                @if (Model != null && Model.Tournament != null)
+                {
+                    <h1>@Model.Tournament.Name</h1>
+                    <div class="tournament-meta">
+                        <span class="tournament-type">Singles Draw</span>
+                    </div>
+                }
+                else
+                {
+                    <h1>Tournament Not Found</h1>
+                    <div class="tournament-meta">
+                        <span class="tournament-type">Unable to load tournament details</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (ViewData["DrawMessage"] != null)
+    {
+        <div class="draw-message">
+            <p>@ViewData["DrawMessage"]</p>
+        </div>
+    }
+    else if (Model != null && Model.Tournament != null && Model.DrawMatches != null && Model.DrawMatches.Any())
+    {
+        <div class="draw-container">
+            @{
+                List<IGrouping<int, DrawMatch>> rounds = Model.DrawMatches
+                .GroupBy(m => m.Round)
+                .OrderBy(g => g.Key)
+                .ToList();
+
+                foreach (IGrouping<int, DrawMatch> round in rounds)
+                {
+                    <div class="round">
+                        <div class="round-header">
+                            @{
+                                string roundName = Model.Tournament.Category switch
+                                {
+                                    TournamentCategory.GrandSlam or TournamentCategory.Masters1000 => round.Key switch
+                                    {
+                                        1 => "First Round",
+                                        2 => "Second Round",
+                                        3 => "Third Round",
+                                        4 => "Fourth Round",
+                                        5 => "Quarter Finals",
+                                        6 => "Semi Finals",
+                                        7 => "Final",
+                                        _ => $"Round {round.Key}"
+                                    },
+                                    TournamentCategory.Masters500 => round.Key switch
+                                    {
+                                        1 => "First Round",
+                                        2 => "Second Round",
+                                        3 => "Third Round",
+                                        4 => "Quarter Finals",
+                                        5 => "Semi Finals",
+                                        6 => "Final",
+                                        _ => $"Round {round.Key}"
+                                    },
+                                    _ => round.Key switch
+                                    {
+                                        1 => "First Round",
+                                        2 => "Second Round",
+                                        3 => "Quarter Finals",
+                                        4 => "Semi Finals",
+                                        5 => "Final",
+                                        _ => $"Round {round.Key}"
+                                    }
+                                };
+                            }
+                            <h2>@roundName</h2>
+                        </div>
+
+                        <div class="matches">
+                            @foreach (DrawMatch match in round.OrderBy(m => m.MatchNumber))
+                            {
+                                <div class="match">
+                                    <div class="match-number">@match.MatchNumber</div>
+                                    <div class="match-players">
+                                        <div class="player @(match.WinnerId == match.Player1Id ? "winner" : "")">
+                                            @if (match.Player1 != null)
+                                            {
+                                                <div class="player-info">
+                                                    @if (match.Player1SeedNumber.HasValue)
+                                                    {
+                                                        <div class="seed">[@match.Player1SeedNumber]</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="seed-placeholder"></div>
+                                                    }
+                                                    <div class="name">
+                                                        @match.Player1.Name
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="player-info">
+                                                    <div class="seed-placeholder"></div>
+                                                    <div class="name tbd">To Be Decided</div>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        @if (!match.IsBye)
+                                        {
+                                            <div class="player @(match.WinnerId == match.Player2Id ? "winner" : "")">
+                                                @if (match.Player2 != null)
+                                                {
+                                                    <div class="player-info">
+                                                        @if (match.Player2SeedNumber.HasValue)
+                                                        {
+                                                            <div class="seed">[@match.Player2SeedNumber]</div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="seed-placeholder"></div>
+                                                        }
+                                                        <div class="name">
+                                                            @match.Player2.Name
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="player-info">
+                                                        <div class="seed-placeholder"></div>
+                                                        <div class="name tbd">To Be Decided</div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="player bye">
+                                                <div class="player-info">
+                                                    <div class="seed-placeholder"></div>
+                                                    <div class="name">BYE</div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+    else
+    {
+        <div class="no-draw">
+            <p>The draw for this tournament is not yet available or the tournament details could not be loaded.</p>
+        </div>
+    }
+</div>
