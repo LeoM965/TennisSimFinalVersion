@@ -1,6 +1,6 @@
 ﻿using TennisSim.Models;
 
-namespace TennisSim.Services
+namespace TennisSim.Services.Match
 {
     public interface IMatchService
     {

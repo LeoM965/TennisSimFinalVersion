@@ -1,15 +1,33 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TennisSim.Data;
 using TennisSim.Services;
+using TennisSim.Services.DrawS;
+using TennisSim.Services.Match;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITournamentService, TournamentService>();
+
+
 builder.Services.AddScoped<IEntryListService, EntryListService>();
+
+builder.Services.AddScoped<IMatchQueryService, MatchQueryService>();
+builder.Services.AddScoped<IMatchUpdateService, MatchUpdateService>();
+builder.Services.AddScoped<MatchSimulationService>();
 builder.Services.AddScoped<IMatchService, MatchService>();
+builder.Services.AddScoped<ITournamentService, TournamentService>();
+
 builder.Services.AddScoped<IDrawService, DrawService>();
+builder.Services.AddScoped<IDrawValidationService, DrawValidationService>();
+builder.Services.AddScoped<IDrawMatchGenerator, DrawMatchGenerator>();
+builder.Services.AddScoped<IDrawPlayerAssigner, DrawPlayerAssigner>();
+
 builder.Services.AddScoped<RankingService>();
 
 builder.Services.AddSession(options =>
@@ -20,10 +38,6 @@ builder.Services.AddSession(options =>
 });
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

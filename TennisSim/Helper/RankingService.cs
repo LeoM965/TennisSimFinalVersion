@@ -14,11 +14,11 @@ namespace TennisSim.Services
         }
 
         private static int CalculateTournamentPoints(
-            List<Match> tournamentMatches,
+            List<Models.Match> tournamentMatches,
             int playerId,
             List<PointDistribution> pointDistributions)
         {
-            Match? finalMatch = tournamentMatches.FirstOrDefault(m => m.Round == "Final");
+            Models.Match? finalMatch = tournamentMatches.FirstOrDefault(m => m.Round == "Final");
             if (finalMatch == null) return 0;
             Tournament tournament = finalMatch.Draw.Tournament;
             if (finalMatch.WinnerId == playerId)
@@ -36,7 +36,7 @@ namespace TennisSim.Services
                     .Select(pd => pd.Points)
                     .FirstOrDefault();
             }
-            Match? playerLastMatch = tournamentMatches
+            Models.Match? playerLastMatch = tournamentMatches
                 .Where(m => (m.Player1Id == playerId || m.Player2Id == playerId))
                 .OrderByDescending(m => m.Round)
                 .FirstOrDefault();
@@ -70,7 +70,7 @@ namespace TennisSim.Services
                 .Select(d => d.Id)
                 .ToListAsync();
 
-            List<Match> lastWeekMatches = await _context.Matches
+            List<Models.Match> lastWeekMatches = await _context.Matches
                 .Include(m => m.Draw)
                     .ThenInclude(d => d.Tournament)
                 .Where(m => m.Date >= lastMonday && m.Date < thisMonday && userDrawIds.Contains(m.DrawId))
@@ -107,7 +107,7 @@ namespace TennisSim.Services
                 });
             }
 
-            Dictionary<int, List<Match>> tournaments = lastWeekMatches
+            Dictionary<int, List<Models.Match>> tournaments = lastWeekMatches
                 .GroupBy(m => m.Draw.TournamentId)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
@@ -115,7 +115,7 @@ namespace TennisSim.Services
             {
                 int decayedPoints = (int)Math.Round(prevRank.Points * (1 - DecayPercentage));
                 int maxTournamentPoints = 0;
-                foreach (KeyValuePair<int, List<Match>> tournament in tournaments)
+                foreach (KeyValuePair<int, List<Models.Match>> tournament in tournaments)
                 {
                     int tournamentPoints = CalculateTournamentPoints(
                         tournament.Value,
