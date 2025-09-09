@@ -66,7 +66,7 @@ public class EligibilityService
                 Name = p.Name,
                 Rank = p.LatestRanking.Rank,
                 Points = p.LatestRanking.Points,
-                EntryChance = 0.0 // Will be calculated next
+                EntryChance = 0.0 
             })
             .Where(p => TournamentConfiguration.IsEligible(p.Rank, tournament.Category))
             .Select(p => new EligiblePlayer

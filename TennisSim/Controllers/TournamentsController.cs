@@ -86,16 +86,26 @@ namespace TennisSim.Controllers
 
             try
             {
-                UserEntryList userEntryList = _entryListService.GetUserEntryList(user.Id, id);
+                UserEntryList? userEntryList = _entryListService.GetUserEntryList(user.Id, id);
                 if (userEntryList == null)
-                    return NotFound("Entry list not found");
+                {
+                    List<EntryList> generatedEntryList = _entryListService.GenerateEntryList(id, user.Id);
+                    ViewData["TournamentName"] = tournament.Name;
+                    return View(generatedEntryList);
+                }
 
                 List<EntryList> entryList = _context.EntryLists
                     .Where(el => el.UserEntryListId == userEntryList.Id)
+                    .OrderBy(el => el.Rank)
                     .ToList();
 
                 if (!entryList.Any())
+                {
                     entryList = _entryListService.GenerateEntryList(id, user.Id);
+                }
+
+                userEntryList.HasViewedDraw = true;
+                _context.SaveChanges();
 
                 ViewData["TournamentName"] = tournament.Name;
                 return View(entryList);
@@ -119,16 +129,19 @@ namespace TennisSim.Controllers
                     return RedirectToAction("EnterUsername", "GameStart");
 
                 UserName user = _userService.GetUserByUsername(username);
+                if (user == null)
+                    return NotFound("User not found");
+
                 DateTime requestedDate = date ?? user.CurrentDate;
 
                 if (requestedDate > user.CurrentDate)
                     return RedirectToAction("Schedule", new { id, username, date = user.CurrentDate });
 
-                UserEntryList userEntryList = _entryListService.GetUserEntryList(user.Id, id);
+                UserEntryList? userEntryList = _entryListService.GetUserEntryList(user.Id, id);
                 if (userEntryList == null || !userEntryList.HasViewedDraw)
                     return RedirectToAction("EntryList", new { id });
 
-                Draw? draw = await GetOrCreateDraw(id, user.Id, tournament);
+                Draw? draw = await GetOrCreateDrawAsync(id, user.Id, tournament);
                 if (draw == null)
                     return NotFound("Draw could not be created or retrieved");
 
@@ -170,7 +183,7 @@ namespace TennisSim.Controllers
             return HttpContext.Session.GetString("Username");
         }
 
-        private async Task<Draw?> GetOrCreateDraw(int tournamentId, int userId, Tournament tournament)
+        private async Task<Draw?> GetOrCreateDrawAsync(int tournamentId, int userId, Tournament tournament)
         {
             Draw? draw = await _context.Draws
                 .Include(d => d.DrawMatches)
@@ -192,15 +205,15 @@ namespace TennisSim.Controllers
             if (fullTournament == null)
                 return null;
 
-            List<EntryList> entryList = await GetEntryListForUser(fullTournament, userId);
+            List<EntryList> entryList = GetEntryListForUser(fullTournament, userId);
             if (entryList.Count == 0)
                 return null;
 
-            await ValidatePlayersExist(entryList);
+            await ValidatePlayersExistAsync(entryList);
             return _drawService.CreateNewDraw(fullTournament, entryList, userId);
         }
 
-        private static async Task<List<EntryList>> GetEntryListForUser(Tournament tournament, int userId)
+        private static List<EntryList> GetEntryListForUser(Tournament tournament, int userId)
         {
             UserEntryList? userEntryLists = tournament.UserEntryLists?
                 .FirstOrDefault(uel => uel.UserNameId == userId);
@@ -215,7 +228,7 @@ namespace TennisSim.Controllers
                 .ToList() ?? new List<EntryList>();
         }
 
-        private async Task ValidatePlayersExist(List<EntryList> entryList)
+        private async Task ValidatePlayersExistAsync(List<EntryList> entryList)
         {
             List<string> playerNames = entryList.Select(e => e.PlayerName).ToList();
             Dictionary<string, Player> allPlayers = await _context.Players
