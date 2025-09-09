@@ -252,23 +252,3 @@ select {
         opacity: 0.7;
     }
 }
-
-@media (max-width: 768px) {
-    .tournament-schedule {
-        padding: 1rem;
-    }
-
-    header {
-        padding: 2rem;
-    }
-
-    .match {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        text-align: center;
-    }
-
-    .days-nav {
-        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-    }
-}

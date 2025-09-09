@@ -4,6 +4,8 @@ using TennisSim.Models;
 using Microsoft.EntityFrameworkCore;
 using TennisSim.Data;
 using TennisSim.Services.DrawS;
+using TennisSim.Models.Entities;
+using TennisSim.Services.EntryListS;
 
 namespace TennisSim.Controllers
 {

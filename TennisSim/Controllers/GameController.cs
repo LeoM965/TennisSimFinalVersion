@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using TennisSim.Data;
 using TennisSim.Models;
+using TennisSim.Models.Entities;
+using TennisSim.Models.ViewModels;
 using TennisSim.Services;
 
 namespace TennisSim.Controllers

@@ -2,6 +2,7 @@
 using TennisSim.Data;
 using TennisSim.Services;
 using TennisSim.Services.DrawS;
+using TennisSim.Services.EntryListS;
 using TennisSim.Services.Match;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ builder.Services.AddScoped<ITournamentService, TournamentService>();
 
 
 builder.Services.AddScoped<IEntryListService, EntryListService>();
+builder.Services.AddScoped<EligibilityService>();
+
 
 builder.Services.AddScoped<IMatchQueryService, MatchQueryService>();
 builder.Services.AddScoped<IMatchUpdateService, MatchUpdateService>();

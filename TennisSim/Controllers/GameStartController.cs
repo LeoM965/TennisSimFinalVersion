@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using TennisSim.Data;
-using TennisSim.Models;
+using TennisSim.Models.Entities;
 namespace TennisSim.Controllers
 {
     public class GameStartController : Controller

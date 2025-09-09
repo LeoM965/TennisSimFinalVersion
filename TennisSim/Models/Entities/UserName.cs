@@ -1,4 +1,4 @@
-﻿namespace TennisSim.Models
+﻿namespace TennisSim.Models.Entities
 {
     public class UserName
     {

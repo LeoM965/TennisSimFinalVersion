@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using TennisSim.Models;
+using TennisSim.Models.Entities;
 
 namespace TennisSim.Data
 {

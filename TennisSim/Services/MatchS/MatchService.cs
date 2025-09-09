@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using TennisSim.Data;
-using TennisSim.Models;
+using TennisSim.Models.Entities;
+using TennisSim.Models.ViewModels;
 
 namespace TennisSim.Services.Match
 {

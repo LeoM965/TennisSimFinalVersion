@@ -120,23 +120,3 @@ h1 {
     font-style: italic;
     margin: 0;
 }
-
-@media (max-width: 480px) {
-    .logout-card {
-        padding: 2rem 1.5rem;
-        margin: 1rem;
-    }
-
-    h1 {
-        font-size: 2rem;
-    }
-
-    .action-buttons {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .btn {
-        width: 100%;
-    }
-}

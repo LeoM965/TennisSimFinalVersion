@@ -164,19 +164,3 @@ body {
         font-size: 14px;
         color: #555;
     }
-
-@media (max-width: 768px) {
-    .tournament-title {
-        font-size: 2rem;
-    }
-
-    .info-item {
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 1rem;
-    }
-
-        .info-item:last-child {
-            border-bottom: none;
-        }
-}

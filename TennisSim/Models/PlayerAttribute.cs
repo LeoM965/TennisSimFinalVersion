@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using TennisSim.Models.Entities;
 
 namespace TennisSim.Models
 {

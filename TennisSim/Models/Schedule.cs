@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using TennisSim.Models;
+using TennisSim.Models.Entities;
 
 public class TournamentScheduleViewModel
 {

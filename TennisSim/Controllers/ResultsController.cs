@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TennisSim.Data;
-using TennisSim.Models;
+using TennisSim.Models.Entities;
 
 namespace TennisSim.Controllers
 {

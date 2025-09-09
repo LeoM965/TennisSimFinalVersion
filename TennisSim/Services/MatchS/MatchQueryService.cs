@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TennisSim.Data;
-using TennisSim.Models;
+using TennisSim.Models.Entities;
 using TennisSim.Services.Match;
 
 public class MatchQueryService : IMatchQueryService

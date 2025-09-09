@@ -1,14 +1,14 @@
-﻿namespace TennisSim.Models
+﻿namespace TennisSim.Models.Entities
 {
     public class DrawMatch
     {
         public DrawMatch()
         {
-            this.Draw = null!;
-            this.Player1 = null!;
-            this.Player2 = null!;
-            this.Winner = null!;
-            this.Match = null!;
+            Draw = null!;
+            Player1 = null!;
+            Player2 = null!;
+            Winner = null!;
+            Match = null!;
         }   
 
 

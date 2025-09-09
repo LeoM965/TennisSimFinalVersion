@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TennisSim.Data;
 using TennisSim.Models;
+using TennisSim.Models.Entities;
 using TennisSim.Services.DrawS;
 
 namespace TennisSim.Services
@@ -11,7 +12,8 @@ namespace TennisSim.Services
         private readonly IDrawValidationService _validationService;
         private readonly IDrawMatchGenerator _matchGenerator;
 
-        public DrawService(ApplicationDbContext context, IDrawValidationService validationService, IDrawMatchGenerator matchGenerator)
+        public DrawService(ApplicationDbContext context, IDrawValidationService validationService,
+            IDrawMatchGenerator matchGenerator)
         {
             _context = context;
             _validationService = validationService;
@@ -22,11 +24,11 @@ namespace TennisSim.Services
         {
             await _validationService.ValidateInputsAsync(entryList, userId);
 
-            (int drawSize, int byeCount, int seedCount) = _validationService.GetDrawConstants(tournament.Category);
-            List<string> playerNames = entryList.ConvertAll(e => e.PlayerName);
-            Dictionary<string, Player> allPlayers = await _validationService.ValidateAndGetPlayersAsync(playerNames);
+            var (drawSize, byeCount, seedCount) = _validationService.GetDrawConstants(tournament.Category);
+            var playerNames = entryList.ConvertAll(e => e.PlayerName);
+            var allPlayers = await _validationService.ValidateAndGetPlayersAsync(playerNames);
 
-            Draw draw = new Draw
+            var draw = new Draw
             {
                 TournamentId = tournament.Id,
                 UserId = userId,
@@ -38,9 +40,12 @@ namespace TennisSim.Services
             _context.Draws.Add(draw);
             await _context.SaveChangesAsync();
 
-            List<DrawMatch> matches = _matchGenerator.GenerateDrawMatches(draw.Id, entryList, drawSize, byeCount, seedCount, allPlayers);
+            var matches = _matchGenerator.GenerateDrawMatches(draw.Id, entryList, drawSize, byeCount,
+                seedCount, allPlayers);
+
             _context.DrawMatches.AddRange(matches);
             _matchGenerator.ProcessByeMatches(matches);
+
             await _context.SaveChangesAsync();
 
             return await GetDrawWithIncludesAsync(draw.Id);

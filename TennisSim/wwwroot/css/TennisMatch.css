@@ -188,22 +188,3 @@
     text-align: center;
     padding: 2rem;
 }
-
-@media (max-width: 768px) {
-    .tennis-match {
-        padding: 1rem 0;
-    }
-
-    .player-card .card-body {
-        padding: 1.5rem 1rem;
-    }
-
-    .attribute-item {
-        padding: 0.75rem;
-        margin-bottom: 1rem;
-    }
-
-    .progress {
-        height: 0.875rem;
-    }
-}

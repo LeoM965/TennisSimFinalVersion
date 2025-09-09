@@ -1,6 +1,6 @@
-﻿using TennisSim.Models;
+﻿using TennisSim.Models.Entities;
 
-namespace TennisSim.Services
+namespace TennisSim.Services.EntryListS
 {
     public interface IEntryListService
     {

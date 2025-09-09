@@ -1,4 +1,4 @@
-﻿using TennisSim.Models;
+﻿using TennisSim.Models.Entities;
 
 public class Ranking
 {

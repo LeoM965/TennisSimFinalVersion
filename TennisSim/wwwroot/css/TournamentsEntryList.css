@@ -181,24 +181,3 @@
         transform: translateY(0);
     }
 }
-
-@media (max-width: 768px) {
-    .tournament-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1rem;
-    }
-
-    .controls-container {
-        flex-direction: column;
-    }
-
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .entry-table {
-        display: block;
-        overflow-x: auto;
-    }
-}

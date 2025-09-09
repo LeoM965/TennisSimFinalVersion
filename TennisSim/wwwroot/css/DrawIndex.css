@@ -22,7 +22,6 @@
 
 .tournament-table {
     width: 100%;
-    margin: 0;
     border-collapse: collapse;
 }
 
@@ -59,10 +58,6 @@
     font-weight: 600;
 }
 
-.tournament-date {
-    color: #555;
-}
-
 .category-badge {
     display: inline-block;
     padding: 0.3rem 0.6rem;
@@ -77,19 +72,44 @@
         color: white;
     }
 
-    .category-badge.wta1000 {
+    .category-badge.masters1000 {
         background-color: #ff5733;
         color: white;
     }
 
-    .category-badge.wta500 {
+    .category-badge.masters500 {
         background-color: #33a0ff;
         color: white;
     }
 
-    .category-badge.wta250 {
+    .category-badge.masters250 {
         background-color: #33ff57;
         color: #333;
+    }
+
+    .category-badge.challenger {
+        background-color: #ffa500;
+        color: white;
+    }
+
+    .category-badge.itf100k {
+        background-color: #9b59b6;
+        color: white;
+    }
+
+    .category-badge.itf50k {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .category-badge.itf25k {
+        background-color: #f39c12;
+        color: white;
+    }
+
+    .category-badge.itf10k {
+        background-color: #95a5a6;
+        color: white;
     }
 
 .btn-view {
@@ -127,24 +147,4 @@
 
 .empty-state p {
     color: #777;
-}
-
-@media (max-width: 768px) {
-    .tournament-section {
-        padding: 1rem;
-    }
-
-    .tournament-container {
-        overflow-x: auto;
-    }
-
-    .tournament-table {
-        min-width: 600px;
-    }
-
-        .tournament-table th,
-        .tournament-table td {
-            padding: 0.75rem 0.5rem;
-            font-size: 0.9rem;
-        }
 }
