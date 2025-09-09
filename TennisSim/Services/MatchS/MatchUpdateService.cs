@@ -22,7 +22,7 @@ namespace TennisSim.Services.Match
             drawMatch.WinnerId = winner.Id;
             drawMatch.Winner = winner;
 
-            Models.Match match = drawMatch.Match ?? new Models.Match();
+            Models.Entities.Match match = drawMatch.Match ?? new Models.Entities.Match();
             await UpdateMatchDetails(match, drawMatch, scheduleMatch, winner, detailedScore);
 
             if (drawMatch.Match == null)
@@ -54,7 +54,7 @@ namespace TennisSim.Services.Match
             await _context.SaveChangesAsync();
         }
 
-        private async Task UpdateMatchDetails(Models.Match match, DrawMatch drawMatch,
+        private async Task UpdateMatchDetails(Models.Entities.Match match, DrawMatch drawMatch,
             ScheduleMatch scheduleMatch, Player winner, string detailedScore)
         {
             if (drawMatch.Draw?.TournamentId > 0)

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TennisSim.Services;
-using TennisSim.Models;
 using Microsoft.EntityFrameworkCore;
 using TennisSim.Data;
 using TennisSim.Services.DrawS;

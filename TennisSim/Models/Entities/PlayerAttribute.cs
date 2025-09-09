@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using TennisSim.Models.Entities;
 
-namespace TennisSim.Models
+namespace TennisSim.Models.Entities
 {
     [Table("PlayerAttributes")]
     public class PlayerAttribute

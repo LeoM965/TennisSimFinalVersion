@@ -1,4 +1,4 @@
-﻿using TennisSim.Models.ViewModels;
+﻿using TennisSim.Models;
 
 namespace TennisSim.Services.Match
 {

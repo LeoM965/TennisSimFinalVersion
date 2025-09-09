@@ -1,4 +1,6 @@
-﻿namespace TennisSim.Models.ViewModels
+﻿using TennisSim.Models.Entities;
+
+namespace TennisSim.Models
 {
     public class MatchDetailsViewModel
     {

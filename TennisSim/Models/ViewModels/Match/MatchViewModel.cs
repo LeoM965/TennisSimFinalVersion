@@ -1,6 +1,6 @@
 ﻿using TennisSim.Models.Entities;
 
-namespace TennisSim.Models.ViewModels
+namespace TennisSim.Models
 {
     public class MatchViewModel
     {

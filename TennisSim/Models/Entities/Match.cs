@@ -1,6 +1,4 @@
-﻿using TennisSim.Models.Entities;
-
-namespace TennisSim.Models
+﻿namespace TennisSim.Models.Entities
 {
     public class Match
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TennisSim.Data;
-using TennisSim.Models;
 using TennisSim.Models.Entities;
+
 namespace TennisSim.Services
 {
     public class RankingService
@@ -15,40 +15,82 @@ namespace TennisSim.Services
         }
 
         private static int CalculateTournamentPoints(
-            List<Models.Match> tournamentMatches,
+            List<Models.Entities.Match> tournamentMatches,
             int playerId,
             List<PointDistribution> pointDistributions)
         {
-            Models.Match? finalMatch = tournamentMatches.FirstOrDefault(m => m.Round == "Final");
-            if (finalMatch == null) return 0;
-            Tournament tournament = finalMatch.Draw.Tournament;
-            if (finalMatch.WinnerId == playerId)
+            List<Models.Entities.Match> playerMatches = tournamentMatches
+                .Where(m => m.Player1Id == playerId || m.Player2Id == playerId)
+                .OrderBy(m => GetRoundOrder(m.Round))
+                .ToList();
+
+            if (playerMatches.Count == 0) return 0;
+
+            Tournament tournament = tournamentMatches.First().Draw.Tournament;
+            Models.Entities.Match? finalMatch = tournamentMatches.FirstOrDefault(m => m.Round == "Final");
+
+            if (finalMatch?.WinnerId == playerId)
             {
-                return pointDistributions
-                    .Where(pd => pd.Category == tournament.Category && pd.Round == "Winner")
-                    .Select(pd => pd.Points)
-                    .FirstOrDefault();
+                return GetPointsForRound(pointDistributions, tournament.Category.ToString(), "Winner");
             }
-            if ((finalMatch.Player1Id == playerId || finalMatch.Player2Id == playerId)
-                && finalMatch.WinnerId != playerId)
+
+            if (finalMatch != null && (finalMatch.Player1Id == playerId || finalMatch.Player2Id == playerId))
             {
-                return pointDistributions
-                    .Where(pd => pd.Category == tournament.Category && pd.Round == "Final")
-                    .Select(pd => pd.Points)
-                    .FirstOrDefault();
+                return GetPointsForRound(pointDistributions, tournament.Category.ToString(), "Final");
             }
-            Models.Match? playerLastMatch = tournamentMatches
-                .Where(m => (m.Player1Id == playerId || m.Player2Id == playerId))
-                .OrderByDescending(m => m.Round)
-                .FirstOrDefault();
-            if (playerLastMatch != null)
+
+            Models.Entities.Match? lastMatch = playerMatches.LastOrDefault(m => m.WinnerId != playerId);
+            if (lastMatch != null)
             {
-                return pointDistributions
-                    .Where(pd => pd.Category == tournament.Category && pd.Round == playerLastMatch.Round)
-                    .Select(pd => pd.Points)
-                    .FirstOrDefault();
+                return GetPointsForRound(pointDistributions, tournament.Category.ToString(), lastMatch.Round);
             }
+
+            Models.Entities.Match? lastWonMatch = playerMatches.LastOrDefault(m => m.WinnerId == playerId);
+            if (lastWonMatch != null)
+            {
+                string nextRound = GetNextRound(lastWonMatch.Round);
+                return GetPointsForRound(pointDistributions, tournament.Category.ToString(), nextRound);
+            }
+
             return 0;
+        }
+
+        private static int GetPointsForRound(List<PointDistribution> pointDistributions, string category, string round)
+        {
+            return pointDistributions
+                .Where(pd => pd.Category.ToString() == category && pd.Round == round)
+                .Select(pd => pd.Points)
+                .FirstOrDefault();
+        }
+
+        private static int GetRoundOrder(string round)
+        {
+            return round switch
+            {
+                "Round 1" => 1,
+                "Round 2" => 2,
+                "Round 3" => 3,
+                "Round of 16" => 4,
+                "Quarter Final" => 5,
+                "Semi Final" => 6,
+                "Final" => 7,
+                _ => 0
+            };
+        }
+
+        private static string GetNextRound(string currentRound)
+        {
+            return currentRound switch
+            {
+                "Round 1" => "Round 2",
+                "Round 2" => "Round 3",
+                "Round 3" => "Round of 16",
+                "Round of 16" => "Quarter Final",
+                "Quarter Final" => "Semi Final",
+                "Semi Final" => "Final",
+                "Final" => "Winner",
+                _ => currentRound
+            };
         }
 
         public async Task UpdateRankingsAsync(DateTime targetDate, int userId)
@@ -71,7 +113,7 @@ namespace TennisSim.Services
                 .Select(d => d.Id)
                 .ToListAsync();
 
-            List<Models.Match> lastWeekMatches = await _context.Matches
+            List<Models.Entities.Match> lastWeekMatches = await _context.Matches
                 .Include(m => m.Draw)
                     .ThenInclude(d => d.Tournament)
                 .Where(m => m.Date >= lastMonday && m.Date < thisMonday && userDrawIds.Contains(m.DrawId))
@@ -84,9 +126,14 @@ namespace TennisSim.Services
 
             List<Ranking> newRankings = new List<Ranking>();
 
-            DateTime latestPreviousDate = await _context.Rankings
+            DateTime? latestPreviousDateNullable = await _context.Rankings
                 .Where(r => r.UserId == userId && r.Date < thisMonday)
-                .MaxAsync(r => r.Date);
+                .Select(r => r.Date)
+                .MaxAsync();
+
+            if (!latestPreviousDateNullable.HasValue) return;
+
+            DateTime latestPreviousDate = latestPreviousDateNullable.Value;
 
             List<Ranking> previousRankings = await _context.Rankings
                 .Where(r => r.UserId == userId && r.Date == latestPreviousDate)
@@ -108,7 +155,7 @@ namespace TennisSim.Services
                 });
             }
 
-            Dictionary<int, List<Models.Match>> tournaments = lastWeekMatches
+            Dictionary<int, List<Models.Entities.Match>> tournaments = lastWeekMatches
                 .GroupBy(m => m.Draw.TournamentId)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
@@ -116,7 +163,8 @@ namespace TennisSim.Services
             {
                 int decayedPoints = (int)Math.Round(prevRank.Points * (1 - DecayPercentage));
                 int maxTournamentPoints = 0;
-                foreach (KeyValuePair<int, List<Models.Match>> tournament in tournaments)
+
+                foreach (KeyValuePair<int, List<Models.Entities.Match>> tournament in tournaments)
                 {
                     int tournamentPoints = CalculateTournamentPoints(
                         tournament.Value,
@@ -125,6 +173,7 @@ namespace TennisSim.Services
                     );
                     maxTournamentPoints = Math.Max(maxTournamentPoints, tournamentPoints);
                 }
+
                 newRankings.Add(new Ranking
                 {
                     PlayerId = prevRank.PlayerId,
@@ -149,28 +198,29 @@ namespace TennisSim.Services
 
         private async Task CreateInitialRankingsAsync(DateTime targetDate, int userId)
         {
-            DateTime rankingDate = targetDate.Date;
-            while (rankingDate.DayOfWeek != DayOfWeek.Monday)
-            {
-                rankingDate = rankingDate.AddDays(1);
-            }
+            DateTime targetDateOnly = targetDate.Date;
 
-            if (await _context.Rankings.AnyAsync(r => r.Date == rankingDate && r.UserId == userId))
+            if (await _context.Rankings.AnyAsync(r => r.Date == targetDateOnly && r.UserId == userId))
                 return;
 
             List<Ranking> newRankings = new List<Ranking>();
-            DateTime latestSystemDate = DateTime.MinValue;
+            DateTime? latestSystemDateNullable = null;
 
             try
             {
-                latestSystemDate = await _context.Rankings
+                latestSystemDateNullable = await _context.Rankings
                     .Where(r => r.UserId == 0)
-                    .MaxAsync(r => r.Date);
+                    .Select(r => r.Date)
+                    .MaxAsync();
             }
-            catch { }
-
-            if (latestSystemDate != DateTime.MinValue)
+            catch
             {
+                latestSystemDateNullable = null;
+            }
+
+            if (latestSystemDateNullable.HasValue)
+            {
+                DateTime latestSystemDate = latestSystemDateNullable.Value;
                 List<Ranking> systemRankings = await _context.Rankings
                     .Where(r => r.UserId == 0 && r.Date == latestSystemDate)
                     .ToListAsync();
@@ -183,7 +233,7 @@ namespace TennisSim.Services
                         {
                             PlayerId = systemRank.PlayerId,
                             Points = systemRank.Points,
-                            Date = rankingDate,
+                            Date = targetDateOnly,
                             UserId = userId,
                             Rank = systemRank.Rank
                         });
@@ -199,7 +249,7 @@ namespace TennisSim.Services
                         {
                             PlayerId = playerId,
                             Points = 0,
-                            Date = rankingDate,
+                            Date = targetDateOnly,
                             UserId = userId,
                             Rank = 0
                         });
@@ -207,12 +257,12 @@ namespace TennisSim.Services
                 }
                 else
                 {
-                    await CreateDefaultRankingsAsync(rankingDate, userId, newRankings);
+                    await CreateDefaultRankingsAsync(targetDateOnly, userId, newRankings);
                 }
             }
             else
             {
-                await CreateDefaultRankingsAsync(rankingDate, userId, newRankings);
+                await CreateDefaultRankingsAsync(targetDateOnly, userId, newRankings);
             }
 
             List<Ranking> sortedRankings = newRankings
@@ -226,22 +276,6 @@ namespace TennisSim.Services
 
             await _context.Rankings.AddRangeAsync(sortedRankings);
             await _context.SaveChangesAsync();
-
-            if (targetDate < rankingDate)
-            {
-                foreach (var ranking in sortedRankings)
-                {
-                    _context.Rankings.Add(new Ranking
-                    {
-                        PlayerId = ranking.PlayerId,
-                        Points = ranking.Points,
-                        Date = targetDate,
-                        UserId = userId,
-                        Rank = ranking.Rank
-                    });
-                }
-                await _context.SaveChangesAsync();
-            }
         }
 
         private async Task CreateDefaultRankingsAsync(DateTime rankingDate, int userId, List<Ranking> newRankings)

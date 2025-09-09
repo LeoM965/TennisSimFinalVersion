@@ -1,5 +1,4 @@
-﻿using TennisSim.Models;
-using TennisSim.Models.Entities;
+﻿using TennisSim.Models.Entities;
 
 namespace TennisSim.Services
 {

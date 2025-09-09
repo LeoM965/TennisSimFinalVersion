@@ -4,8 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using TennisSim.Data;
 using TennisSim.Models;
 using TennisSim.Models.Entities;
-using TennisSim.Models.ViewModels;
-using TennisSim.Services;
 using TennisSim.Services.Match;
 
 namespace TennisSim.Controllers

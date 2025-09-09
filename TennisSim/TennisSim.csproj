@@ -19,4 +19,8 @@
     <Folder Include="wwwroot\images\tournaments\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Models\DTOs\Draw\DrawMatchDto.cs" />
+  </ItemGroup>
+
 </Project>

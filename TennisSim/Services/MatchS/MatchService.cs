@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using TennisSim.Data;
+using TennisSim.Models;
 using TennisSim.Models.Entities;
-using TennisSim.Models.ViewModels;
 
 namespace TennisSim.Services.Match
 {
@@ -38,7 +38,7 @@ namespace TennisSim.Services.Match
                 if (drawMatch.Player1?.Attributes == null || drawMatch.Player2?.Attributes == null)
                     throw new InvalidOperationException("Player attributes are missing.");
 
-                TennisSim.Models.Match match = drawMatch.Match ?? CreateNewMatch(scheduleMatch, drawMatch);
+                TennisSim.Models.Entities.Match match = drawMatch.Match ?? CreateNewMatch(scheduleMatch, drawMatch);
 
                 return new MatchViewModel
                 {
@@ -104,9 +104,9 @@ namespace TennisSim.Services.Match
             }
         }
 
-        private static TennisSim.Models.Match CreateNewMatch(ScheduleMatch scheduleMatch, DrawMatch drawMatch)
+        private static TennisSim.Models.Entities.Match CreateNewMatch(ScheduleMatch scheduleMatch, DrawMatch drawMatch)
         {
-            return new TennisSim.Models.Match
+            return new TennisSim.Models.Entities.Match
             {
                 Id = scheduleMatch.Id,
                 Player1 = drawMatch.Player1,
