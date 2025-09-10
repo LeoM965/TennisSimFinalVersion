@@ -137,36 +137,36 @@
                     })
                 })
                 .then(response => response.json())
-                .then(data => {
-                    btn.classList.remove('loading');
-                    btn.disabled = false;
+                        .then(data => {
+            btn.classList.remove('loading');
+            btn.disabled = false;
 
-                    if (data.success) {
-                        currentDate.textContent = data.newDate;
-                        currentDay.textContent = data.newDay;
+            if (data.success) {
+                currentDate.textContent = data.newDate;
+                currentDay.textContent = data.newDay;
 
-                        btn.classList.add('success');
-                        btn.innerHTML = '<i class="fas fa-check"></i> Updated';
+                btn.classList.add('success');
+                btn.innerHTML = '<i class="fas fa-check"></i> Updated';
 
-                        showAlert('Date updated successfully!', 'success');
+                showAlert('Date updated successfully!', 'success');
 
-                        setTimeout(() => {
-                            btn.classList.remove('success');
-                            btn.innerHTML = '<i class="fas fa-forward"></i> Next Day';
-                        }, 2000);
-                    } else {
-                        showAlert(data.message || 'Failed to update date', 'error');
-                        btn.innerHTML = '<i class="fas fa-forward"></i> Next Day';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    btn.classList.remove('loading');
-                    btn.disabled = false;
+                setTimeout(() => {
+                    btn.classList.remove('success');
                     btn.innerHTML = '<i class="fas fa-forward"></i> Next Day';
-                    showAlert('An error occurred while updating the date', 'error');
-                });
-            });
+                }, 2000);
+            } else {
+                console.error('Server Error:', data);
+                showAlert(
+                    data.message +
+                    (data.error ? '\nError: ' + data.error : '') +
+                    (data.inner ? '\nInner: ' + data.inner : ''),
+                    'error'
+                );
+                btn.innerHTML = '<i class="fas fa-forward"></i> Next Day';
+            }
+        });
+
+                    });
         });
     </script>
 }

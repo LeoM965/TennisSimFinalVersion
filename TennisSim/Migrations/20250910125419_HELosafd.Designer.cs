@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TennisSim.Data;
 
@@ -11,9 +12,11 @@ using TennisSim.Data;
 namespace TennisSim.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250910125419_HELosafd")]
+    partial class HELosafd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4860,14 +4863,14 @@ namespace TennisSim.Migrations
                     b.Property<bool>("HasBeenViewed")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("TournamentId")
+                    b.Property<int>("TournamentId1")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DrawId");
 
-                    b.HasIndex("TournamentId");
+                    b.HasIndex("TournamentId1");
 
                     b.ToTable("Schedules");
                 });
@@ -32087,7 +32090,9 @@ namespace TennisSim.Migrations
 
                     b.HasOne("TennisSim.Models.Entities.Tournament", null)
                         .WithMany("Schedules")
-                        .HasForeignKey("TournamentId");
+                        .HasForeignKey("TournamentId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Draw");
                 });

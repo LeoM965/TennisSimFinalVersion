@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TennisSim.Controllers.Data;
 using TennisSim.Models.Entities;
 
 namespace TennisSim.Data
@@ -118,6 +119,7 @@ namespace TennisSim.Data
 
         private static void ConfigureDrawRelationships(ModelBuilder modelBuilder)
         {
+
             // Relația între Draw și Tournament
             modelBuilder.Entity<Draw>()
                 .HasOne(d => d.Tournament)

@@ -13,26 +13,28 @@ public class EligibilityService
         _random = new Random();
     }
 
-    public List<EligiblePlayer> GetEligiblePlayers(UserName user, Tournament tournament, int userId)
+    public List<EligiblePlayer> GetEligiblePlayers(UserName user, Tournament tournament, int userId, DateTime rankingDate)
     {
         List<string> playersInOtherTournaments = GetPlayersInConflictingTournaments(userId, tournament);
         int maxEntries = TournamentConfiguration.GetMaxEntries(tournament.Category);
-
-        List<PlayerWithRanking> playersWithRankings = GetPlayersWithLatestRankings(user.CurrentDate, playersInOtherTournaments);
+        List<PlayerWithRanking> playersWithRankings = GetPlayersWithRankingsAtDate(rankingDate, playersInOtherTournaments);
         List<EligiblePlayer> eligiblePlayers = FilterEligiblePlayers(playersWithRankings, tournament);
         List<EligiblePlayer> selectedPlayers = SelectPlayersRandomly(eligiblePlayers);
-
         return selectedPlayers
             .OrderBy(p => p.Rank)
             .Take(maxEntries)
             .ToList();
     }
 
+    public List<EligiblePlayer> GetEligiblePlayers(UserName user, Tournament tournament, int userId)
+    {
+        return GetEligiblePlayers(user, tournament, userId, user.CurrentDate);
+    }
+
     private List<string> GetPlayersInConflictingTournaments(int userId, Tournament tournament)
     {
         DateTime tournamentWeekStart = tournament.StartDate.Date.AddDays(-(int)tournament.StartDate.DayOfWeek);
         DateTime tournamentWeekEnd = tournamentWeekStart.AddDays(6);
-
         return _context.UserEntryLists
             .Where(uel => uel.UserNameId == userId)
             .Where(uel => uel.Tournament.StartDate >= tournamentWeekStart &&
@@ -42,7 +44,7 @@ public class EligibilityService
             .ToList();
     }
 
-    private List<PlayerWithRanking> GetPlayersWithLatestRankings(DateTime currentDate, List<string> excludedPlayers)
+    private List<PlayerWithRanking> GetPlayersWithRankingsAtDate(DateTime rankingDate, List<string> excludedPlayers)
     {
         return _context.Players
             .Where(p => p.Active && !excludedPlayers.Contains(p.Name))
@@ -50,7 +52,7 @@ public class EligibilityService
             {
                 Name = p.Name,
                 LatestRanking = p.Rankings
-                    .Where(r => r.Date <= currentDate)
+                    .Where(r => r.Date <= rankingDate)
                     .OrderByDescending(r => r.Date)
                     .FirstOrDefault()
             })
@@ -66,7 +68,7 @@ public class EligibilityService
                 Name = p.Name,
                 Rank = p.LatestRanking.Rank,
                 Points = p.LatestRanking.Points,
-                EntryChance = 0.0 
+                EntryChance = 0.0
             })
             .Where(p => TournamentConfiguration.IsEligible(p.Rank, tournament.Category))
             .Select(p => new EligiblePlayer
@@ -86,6 +88,7 @@ public class EligibilityService
             .ToList();
     }
 }
+
 public class PlayerWithRanking
 {
     public string Name { get; set; } = string.Empty;

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using TennisSim.Models.Entities;
 
-namespace TennisSim.Data
+namespace TennisSim.Controllers.Data
 {
     public static class TournamentSeedData
     {

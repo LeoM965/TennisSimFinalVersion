@@ -23,4 +23,6 @@ public class Schedule
     public DateTime Date { get; set; } = DateTime.MinValue;
     public Draw Draw { get; set; } = new Draw();
     public List<ScheduleMatch> ScheduledMatches { get; set; } = new List<ScheduleMatch>();
+
+    public bool HasBeenViewed { get; set; } = false;
 }

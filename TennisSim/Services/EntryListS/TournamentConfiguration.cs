@@ -80,8 +80,8 @@ namespace TennisSim.Services.EntryListS
 
             TournamentCategory.ITF10K => rank switch
             {
-                >= 300 and <= 350 => 0.2,
-                >= 351 and <= 400 => 0.8,
+                >= 300 and <= 330 => 0.1,
+                >= 331 and <= 400 => 1.0,
                 _ => 0.0
             },
 

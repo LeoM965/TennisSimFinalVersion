@@ -58,7 +58,8 @@ namespace TennisSim.Services.EntryListS
             if (tournament == null || user == null)
                 return new List<EntryList>();
 
-            List<EligiblePlayer> eligiblePlayers = _eligibilityService.GetEligiblePlayers(user, tournament, userId);
+            DateTime pastRankingDate = tournament.StartDate.AddDays(-7);
+            List<EligiblePlayer> eligiblePlayers = _eligibilityService.GetEligiblePlayers(user, tournament, userId, pastRankingDate);
             UserEntryList userEntryList = CreateUserEntryList(userId, tournamentId, user, tournament);
             List<EntryList> entryList = CreateEntryListEntries(eligiblePlayers, userEntryList);
 
@@ -95,6 +96,48 @@ namespace TennisSim.Services.EntryListS
                 UserEntryListId = userEntryList.Id,
                 UserEntryList = userEntryList
             }).ToList();
+        }
+
+        public async Task GenerateEntryListsForUpcomingTournamentsAsync(UserName user)
+        {
+            DateTime dateRange = user.CurrentDate.AddDays(2).Date;
+            List<Tournament> upcomingTournaments = await _context.Tournaments
+                .Where(t => t.StartDate.Date > user.CurrentDate.Date && t.StartDate.Date <= dateRange)
+                .ToListAsync();
+
+            foreach (Tournament tournament in upcomingTournaments)
+            {
+                UserEntryList existingEntryList = await _context.UserEntryLists
+                    .Include(uel => uel.EntryList)
+                    .FirstOrDefaultAsync(uel => uel.UserNameId == user.Id && uel.TournamentId == tournament.Id);
+
+                if (existingEntryList == null)
+                {
+                    GenerateEntryList(tournament.Id, user.Id);
+                }
+                else
+                {
+                    await RefreshEntryListPoints(existingEntryList, user, tournament, user.Id);
+                }
+            }
+        }
+
+        private async Task RefreshEntryListPoints(UserEntryList userEntryList, UserName user, Tournament tournament, int userId)
+        {
+            DateTime pastRankingDate = tournament.StartDate.AddDays(-7);
+            List<EligiblePlayer> eligiblePlayers = _eligibilityService.GetEligiblePlayers(user, tournament, userId, pastRankingDate);
+
+            foreach (EntryList entryItem in userEntryList.EntryList)
+            {
+                EligiblePlayer updatedPlayer = eligiblePlayers.FirstOrDefault(ep => ep.Name == entryItem.PlayerName);
+                if (updatedPlayer != null)
+                {
+                    entryItem.Points = updatedPlayer.Points;
+                    entryItem.Rank = updatedPlayer.Rank;
+                }
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -7,5 +7,7 @@ namespace TennisSim.Services.EntryListS
         UserEntryList GetUserEntryList(int userId, int tournamentId);
         Draw GetTournamentDraw(int tournamentId);
         List<EntryList> GenerateEntryList(int tournamentId, int userId);
+        Task GenerateEntryListsForUpcomingTournamentsAsync(UserName user);
+
     }
 }
