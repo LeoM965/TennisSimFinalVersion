@@ -1,65 +1,55 @@
-﻿:root {
-    --primary-color: #0033a0;
-    --accent-color: #e4002b;
-    --light-gray: #f8f9fa;
-    --border-color: #e0e0e0;
-}
-
-body {
-    background-color: var(--light-gray);
-}
-
-.top-bar {
-    background: var(--primary-color);
+﻿.top-bar {
+    background: var(--primary-900);
     color: white;
     padding: 0.5rem 0;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .tournament-nav {
     background: white;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--gray-200);
     padding: 0;
 }
 
-    .tournament-nav .nav-link {
-        color: #333;
-        font-weight: 500;
-        padding: 1rem 1.5rem;
-        border-bottom: 3px solid transparent;
-    }
+.tournament-nav .nav-link {
+    color: var(--gray-700);
+    font-weight: 500;
+    padding: 1rem 1.25rem;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+}
 
-        .tournament-nav .nav-link.active {
-            border-bottom-color: var(--accent-color);
-            color: var(--accent-color);
-        }
+.tournament-nav .nav-link.active {
+    border-bottom-color: var(--primary-500);
+    color: var(--primary-500);
+}
 
 .tournament-header {
     background: white;
     padding: 2rem 0;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--gray-200);
 }
 
 .tournament-title {
-    color: var(--primary-color);
-    font-size: 2.5rem;
+    color: var(--primary-900);
+    font-size: 2.25rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
 }
 
 .tournament-meta {
-    color: #666;
-    font-size: 1.1rem;
+    color: var(--gray-500);
+    font-size: 1rem;
 }
 
 .tournament-category-badge {
-    background: var(--accent-color);
+    background: var(--primary-500);
     color: white;
-    padding: 0.25rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
+    padding: 0.25rem 0.9rem;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
     font-weight: 500;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     display: inline-block;
 }
 
@@ -67,100 +57,100 @@ body {
 .content-section,
 .sidebar-widget {
     background: white;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
 }
 
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
 }
 
 .info-item {
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid var(--gray-200);
     padding-right: 1rem;
 }
 
-    .info-item:last-child {
-        border-right: none;
-    }
+.info-item:last-child {
+    border-right: none;
+}
 
 .info-label {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
+    color: var(--gray-500);
+    font-size: 0.85rem;
+    margin-bottom: 0.35rem;
 }
 
 .info-value {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #333;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-800);
 }
 
 .tournament-content {
-    padding: 2rem 0;
+    padding: 1.5rem 0;
 }
 
 .section-title {
-    color: var(--primary-color);
-    font-size: 1.25rem;
+    color: var(--primary-700);
+    font-size: 1.15rem;
     font-weight: 600;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--gray-200);
 }
 
 .schedule-item {
     display: flex;
     justify-content: space-between;
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--border-color);
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--gray-100);
 }
 
-    .schedule-item:last-child {
-        border-bottom: none;
-    }
+.schedule-item:last-child {
+    border-bottom: none;
+}
 
 .schedule-date {
     font-weight: 500;
 }
 
 .schedule-event {
-    color: #666;
+    color: var(--gray-500);
 }
 
 .table-custom {
     width: 100%;
     border-collapse: collapse;
-    margin: 20px 0;
-    font-family: Arial, sans-serif;
+    margin: 1rem 0;
 }
 
-    .table-custom th,
-    .table-custom td {
-        padding: 12px 15px;
-        text-align: left;
-        border: 1px solid #ddd;
-    }
+.table-custom th,
+.table-custom td {
+    padding: 0.9rem 1rem;
+    text-align: left;
+    border: 1px solid var(--gray-200);
+}
 
-    .table-custom th {
-        background-color: #343a40;
-        color: white;
-        font-size: 16px;
-    }
+.table-custom th {
+    background: var(--primary-800);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
 
-    .table-custom tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
+.table-custom tr:nth-child(even) {
+    background: var(--gray-50);
+}
 
-    .table-custom tr:hover {
-        background-color: #ddd;
-    }
+.table-custom tr:hover {
+    background: var(--gray-100);
+}
 
-    .table-custom td {
-        font-size: 14px;
-        color: #555;
-    }
+.table-custom td {
+    font-size: 0.9rem;
+    color: var(--gray-700);
+}

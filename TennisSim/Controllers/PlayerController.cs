@@ -93,12 +93,13 @@ namespace TennisSim.Controllers
 
         private static void AssignLatestRankingsToPlayers(List<Player> players, List<Ranking> userRankings, DateTime latestRankingDate)
         {
+            Dictionary<int, Ranking> rankingDict = userRankings
+                .Where(r => r.Date == latestRankingDate)
+                .ToDictionary(r => r.PlayerId);
+
             foreach (Player player in players)
             {
-                Ranking? ranking = userRankings
-                    .FirstOrDefault(r => r.PlayerId == player.Id && r.Date == latestRankingDate);
-
-                if (ranking != null)
+                if (rankingDict.TryGetValue(player.Id, out var ranking))
                 {
                     player.Ranking = ranking.Rank;
                 }

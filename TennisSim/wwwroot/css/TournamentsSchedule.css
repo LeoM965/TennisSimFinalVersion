@@ -1,201 +1,208 @@
-﻿:root {
-    --primary: #E4135B;
-    --primary-dark: #B30F48;
-    --text: #2d3748;
-    --text-light: #718096;
-    --bg: #f7fafc;
-    --white: #ffffff;
-    --success: #28a745;
-    --warning: #ffc107;
-    --danger: #dc3545;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-.tournament-schedule {
-    background: var(--bg);
-    min-height: 100vh;
-    font-family: system-ui, sans-serif;
-    color: var(--text);
+﻿.tournament-schedule {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1.5rem;
 }
 
 header {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: var(--white);
-    padding: 3rem;
+    background: linear-gradient(135deg, var(--primary-900), var(--primary-500));
+    color: white;
+    padding: 2.5rem;
     text-align: center;
-    border-radius: 1rem;
-    margin-bottom: 2rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 1.5rem;
 }
 
-h1 {
-    font: 800 clamp(2rem, 5vw, 3rem)/1.2 inherit;
-    margin-bottom: 1rem;
+header h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    color: white;
+    margin-bottom: 0.75rem;
 }
 
 select {
-    padding: 0.5rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.5rem;
-    background: var(--white);
-    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    background: white;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--primary-500);
 }
 
 .day-status {
     margin-top: 1rem;
-    padding: 1rem;
-    border-radius: 0.5rem;
+    padding: 0.9rem 1.25rem;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
-    .day-status.warning {
-        background: #fff3cd;
-        color: #856404;
-    }
+.day-status.warning {
+    background: rgba(251, 191, 36, 0.15);
+    color: #92400e;
+}
 
-    .day-status.success {
-        background: #d4edda;
-        color: #155724;
-    }
+.day-status.success {
+    background: rgba(16, 185, 129, 0.15);
+    color: #065f46;
+}
 
 .status-icon {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
 }
 
 .notice {
     text-align: center;
-    background: var(--white);
-    padding: 3rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
 }
 
 .days-nav {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-    gap: 0.75rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
 }
 
 .day-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1rem;
-    background: var(--white);
+    padding: 0.9rem 0.5rem;
+    background: white;
     border: none;
-    border-radius: 1rem;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.25s;
+    box-shadow: var(--shadow-sm);
     position: relative;
+    font-weight: 500;
 }
 
-    .day-btn:hover, .day-btn.active {
-        transform: translateY(-2px);
-    }
+.day-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
 
-    .day-btn.active {
-        background: var(--primary);
-        color: var(--white);
-    }
+.day-btn.active {
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+    color: white;
+}
 
 .pending {
     position: absolute;
-    top: 0.25rem;
-    right: 0.25rem;
-    color: var(--danger);
-    font-size: 0.75rem;
+    top: 0.2rem;
+    right: 0.2rem;
+    color: var(--accent-red);
+    font-size: 0.7rem;
 }
 
 .day-schedule {
     display: none;
 }
 
-    .day-schedule.active {
-        display: block;
+.day-schedule.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 .match {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: 2rem;
-    background: var(--white);
-    padding: 1.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    margin-bottom: 1rem;
-    transition: transform 0.3s;
-    border-left: 4px solid transparent;
+    gap: 1.5rem;
+    background: white;
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 0.75rem;
+    transition: all 0.25s;
+    border-left: 4px solid var(--gray-300);
 }
 
-    .match:hover {
-        transform: translateY(-2px);
-    }
+.match:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
 
-    .match[data-status="inprogress"] {
-        border-left-color: var(--success);
-    }
+.match[data-status="inprogress"] {
+    border-left-color: var(--accent-green);
+}
 
-    .match[data-status="completed"] {
-        border-left-color: #a0aec0;
-    }
+.match[data-status="completed"] {
+    border-left-color: var(--gray-400);
+}
 
-    .match[data-status="postponed"] {
-        border-left-color: var(--warning);
-    }
+.match[data-status="postponed"] {
+    border-left-color: var(--accent-gold);
+}
 
-    .match[data-status="cancelled"] {
-        border-left-color: var(--danger);
-    }
+.match[data-status="cancelled"] {
+    border-left-color: var(--accent-red);
+}
 
-    .match[data-status="walkover"] {
-        border-left-color: #805ad5;
-    }
+.match[data-status="walkover"] {
+    border-left-color: #8b5cf6;
+}
 
-    .match.needs-simulation {
-        border: 2px solid var(--warning);
-    }
+.match.needs-simulation {
+    border: 2px solid var(--accent-gold);
+    background: rgba(251, 191, 36, 0.05);
+}
 
 .match-time time {
-    font: 600 1.1rem inherit;
+    font-weight: 600;
+    font-size: 1rem;
     display: block;
 }
 
 .match-time small {
-    color: var(--text-light);
+    color: var(--gray-500);
+    font-size: 0.8rem;
 }
 
 .player {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
+    padding: 0.4rem;
+    margin-bottom: 0.35rem;
 }
 
 .seed {
-    color: var(--primary);
-    font: 600 0.875rem inherit;
+    color: var(--primary-500);
+    font-weight: 600;
+    font-size: 0.85rem;
 }
 
 .odds {
     margin-left: auto;
-    background: #f8f9fa;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font: 600 0.9rem inherit;
-    color: #2c5282;
+    background: var(--gray-100);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--primary-700);
 }
 
 .result {
@@ -203,16 +210,16 @@ select {
 }
 
 .winner {
-    color: var(--success);
-    font-weight: bold;
+    color: var(--accent-green);
+    font-weight: 700;
 }
 
 .loser {
-    color: var(--danger);
+    color: var(--accent-red);
 }
 
 .tbd {
-    color: var(--text-light);
+    color: var(--gray-400);
     font-style: italic;
 }
 
@@ -223,28 +230,34 @@ select {
 
 .btn {
     padding: 0.5rem 1rem;
-    color: var(--white);
-    background: var(--primary);
-    font: 600 0.875rem inherit;
-    border-radius: 2rem;
+    color: white;
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+    font-weight: 600;
+    font-size: 0.8rem;
+    border-radius: var(--radius-full);
     text-decoration: none;
-    transition: all 0.3s;
+    transition: all 0.25s;
+    border: none;
+    cursor: pointer;
 }
 
-    .btn.simulate {
-        background: var(--success);
-    }
+.btn.simulate {
+    background: linear-gradient(135deg, var(--accent-green), #059669);
+}
 
-    .btn:hover {
-        transform: translateY(-2px);
-    }
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
 
-    .btn.pulse {
-        animation: pulse 2s infinite;
-    }
+.btn.pulse {
+    animation: pulse 2s infinite;
+}
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
     }
 

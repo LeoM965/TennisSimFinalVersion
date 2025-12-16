@@ -142,27 +142,27 @@ namespace TennisSim.Controllers
         private async Task<ValidationResult> ValidateUpcomingTournamentsAsync(UserName user, bool skipAustralianOpen = false)
         {
             DateTime dateRange = user.CurrentDate.AddDays(2).Date;
-            List<Tournament> upcomingTournaments = await _context.Tournaments
-                .Where(t => t.StartDate.Date > user.CurrentDate.Date && t.StartDate.Date <= dateRange)
-                .ToListAsync();
+            
+            IQueryable<Tournament> query = _context.Tournaments
+                .Where(t => t.StartDate.Date > user.CurrentDate.Date && t.StartDate.Date <= dateRange);
 
             if (skipAustralianOpen)
-                upcomingTournaments = upcomingTournaments
-                    .Where(t => !t.Name.Contains("Australian Open", StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                query = query.Where(t => !EF.Functions.Like(t.Name, "%Australian Open%"));
 
-            if (!upcomingTournaments.Any())
+            List<Tournament> upcomingTournaments = await query.AsNoTracking().ToListAsync();
+
+            if (upcomingTournaments.Count == 0)
                 return ValidationResult.Valid;
 
             List<int> tournamentIds = upcomingTournaments.Select(t => t.Id).ToList();
-            List<UserEntryList> userEntryLists = await _context.UserEntryLists
+            Dictionary<int, UserEntryList> entryListDict = await _context.UserEntryLists
                 .Where(uel => uel.UserNameId == user.Id && tournamentIds.Contains(uel.TournamentId))
-                .ToListAsync();
+                .AsNoTracking()
+                .ToDictionaryAsync(uel => uel.TournamentId);
 
             foreach (Tournament tournament in upcomingTournaments)
             {
-                UserEntryList? userEntryList = userEntryLists.FirstOrDefault(uel => uel.TournamentId == tournament.Id);
-                if (userEntryList == null || !userEntryList.HasViewedDraw)
+                if (!entryListDict.TryGetValue(tournament.Id, out var userEntryList) || !userEntryList.HasViewedDraw)
                     return new ValidationResult(false,
                         $"You must view both the entry list and draw for {tournament.Name} before proceeding.");
             }
@@ -172,38 +172,39 @@ namespace TennisSim.Controllers
 
         private async Task<ValidationResult> ValidateActiveTournamentsAsync(UserName user, bool skipAustralianOpen = false)
         {
-            List<Tournament> activeTournaments = await _context.Tournaments
-                .Where(t => t.StartDate.Date <= user.CurrentDate.Date && t.EndDate.Date >= user.CurrentDate.Date)
-                .ToListAsync();
+            IQueryable<Tournament> query = _context.Tournaments
+                .Where(t => t.StartDate.Date <= user.CurrentDate.Date && t.EndDate.Date >= user.CurrentDate.Date);
 
             if (skipAustralianOpen)
-                activeTournaments = activeTournaments
-                    .Where(t => !t.Name.Contains("Australian Open", StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                query = query.Where(t => !EF.Functions.Like(t.Name, "%Australian Open%"));
 
-            if (!activeTournaments.Any())
+            List<Tournament> activeTournaments = await query.AsNoTracking().ToListAsync();
+
+            if (activeTournaments.Count == 0)
                 return ValidationResult.Valid;
 
             List<int> tournamentIds = activeTournaments.Select(t => t.Id).ToList();
-            List<Draw> userDraws = await _context.Draws
+            Dictionary<int, Draw> drawsDict = await _context.Draws
                 .Where(d => tournamentIds.Contains(d.TournamentId) && d.UserId == user.Id)
-                .ToListAsync();
+                .AsNoTracking()
+                .ToDictionaryAsync(d => d.TournamentId);
+
+            List<int> userDrawIds = drawsDict.Values.Select(d => d.Id).ToList();
+            HashSet<int> scheduledDrawIds = (await _context.Schedules
+                .Where(s => s.Date.Date == user.CurrentDate.Date && userDrawIds.Contains(s.DrawId))
+                .Select(s => s.DrawId)
+                .ToListAsync())
+                .ToHashSet();
 
             foreach (Tournament tournament in activeTournaments)
             {
-                Draw? userDraw = userDraws.FirstOrDefault(d => d.TournamentId == tournament.Id);
-                if (userDraw == null)
+                if (!drawsDict.TryGetValue(tournament.Id, out var userDraw))
                 {
-                    if (skipAustralianOpen)
-                        continue;
                     return new ValidationResult(false,
                         $"You must create a draw for {tournament.Name} before proceeding.");
                 }
 
-                bool hasSchedule = await _context.Schedules
-                    .AnyAsync(s => s.Date.Date == user.CurrentDate.Date && s.DrawId == userDraw.Id);
-
-                if (!hasSchedule && !(skipAustralianOpen && tournament.Name.Contains("Australian Open", StringComparison.OrdinalIgnoreCase)))
+                if (!scheduledDrawIds.Contains(userDraw.Id))
                     return new ValidationResult(false,
                         $"You must create a schedule for {tournament.Name} before proceeding.");
             }

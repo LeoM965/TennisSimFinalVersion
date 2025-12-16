@@ -26,6 +26,7 @@ public class MatchQueryService : IMatchQueryService
             .Include(sm => sm.DrawMatch)
                 .ThenInclude(dm => dm.Draw)
                     .ThenInclude(d => d.Tournament)
+            .AsSplitQuery()
             .AsNoTracking()
             .FirstOrDefaultAsync(sm => sm.Id == scheduleMatchId);
     }

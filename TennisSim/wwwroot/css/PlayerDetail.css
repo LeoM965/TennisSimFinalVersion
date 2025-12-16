@@ -1,39 +1,23 @@
-﻿:root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --background-color: #f5f6fa;
-    --border-radius-lg: 15px;
-    --border-radius-sm: 4px;
-    --box-shadow-default: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --box-shadow-hover: 0 8px 12px rgba(0, 0, 0, 0.2);
-    --transition-default: 0.3s ease-in-out;
-}
+﻿/* =================================================
+   PLAYER DETAIL - Uses unified design system
+   ================================================= */
 
-body {
-    background-color: var(--background-color);
-    font-family: 'Poppins', sans-serif;
-    color: #333;
-    margin: 0;
-    padding: 0;
-}
-
+/* Player Profile Container */
 .player-profile {
-    max-width: 1400px;
-    width: 90%;
+    max-width: 1200px;
     margin: 2rem auto;
     padding: 2rem;
-    border-radius: var(--border-radius-lg);
-    background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
-    box-shadow: var(--box-shadow-default);
-    transition: transform var(--transition-default), box-shadow var(--transition-default);
+    border-radius: var(--radius-xl);
+    background: linear-gradient(135deg, var(--primary-900), var(--primary-700));
+    box-shadow: var(--shadow-xl);
 }
 
 .player-banner {
-    border-radius: var(--border-radius-lg);
-    padding: 2rem;
     color: white;
+    padding: 1rem;
 }
 
+/* Player Main Info */
 .player-main-info {
     display: flex;
     align-items: center;
@@ -42,18 +26,19 @@ body {
 }
 
 .player-photo {
-    width: 240px;
-    height: 240px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     overflow: hidden;
     margin: 0 auto;
-    box-shadow: var(--box-shadow-default);
-    transition: transform var(--transition-default);
+    box-shadow: var(--shadow-lg);
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    transition: transform var(--duration-normal) var(--ease-out);
 }
 
-    .player-photo:hover {
-        transform: scale(1.05);
-    }
+.player-photo:hover {
+    transform: scale(1.03);
+}
 
 .player-photo-img {
     width: 100%;
@@ -61,9 +46,10 @@ body {
     object-fit: cover;
 }
 
+/* Player Stats */
 .player-stats {
     display: flex;
-    gap: 2rem;
+    gap: 1.5rem;
     flex-wrap: wrap;
     justify-content: center;
 }
@@ -72,154 +58,112 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 1.1rem;
+    font-size: 1rem;
     padding: 0.5rem 1rem;
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--radius-sm);
     background: rgba(255, 255, 255, 0.1);
     color: white;
+    backdrop-filter: blur(4px);
 }
 
+/* Flags */
 .flag-img,
 .flag-img-small {
-    border-radius: var(--border-radius-sm);
-    box-shadow: var(--box-shadow-default);
+    border-radius: 3px;
+    box-shadow: var(--shadow-sm);
 }
 
 .flag-img {
-    width: 40px;
-    height: 30px;
+    width: 36px;
+    height: 26px;
     margin-left: 0.5rem;
 }
 
 .flag-img-small {
-    width: 24px;
-    height: 18px;
+    width: 22px;
+    height: 16px;
 }
 
-.card {
-    border: none;
-    border-radius: var(--border-radius-lg);
-    box-shadow: var(--box-shadow-default);
-    margin-bottom: 2rem;
-    overflow: hidden;
-    transition: transform var(--transition-default);
-}
-
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--box-shadow-hover);
-    }
-
-.card-header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 1rem 1.5rem;
-    border: none;
-}
-
-    .card-header h3 {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 600;
-    }
-
+/* Attributes Grid */
 .attributes-grid {
     display: grid;
-    gap: 1.5rem;
-    padding: 1rem;
+    gap: 1.25rem;
+    padding: 1.25rem;
 }
 
 .attribute-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
 }
 
 .attribute-label {
     font-weight: 600;
-    color: var(--primary-color);
+    color: var(--gray-700);
+    font-size: 0.9rem;
 }
 
 .attribute-value {
-    font-weight: 600;
-    color: var(--secondary-color);
+    font-weight: 700;
+    color: var(--primary-500);
 }
 
+/* Progress Bars */
 .progress {
-    height: 12px;
-    background-color: #e9ecef;
-    border-radius: 6px;
+    height: 10px;
+    background-color: var(--gray-200);
+    border-radius: 5px;
     overflow: hidden;
 }
 
 .progress-bar {
-    transition: width var(--transition-default);
+    transition: width var(--duration-normal) var(--ease-out);
 }
 
 .progress-bar-excellent {
-    background-color: #2ecc71;
+    background: var(--accent-green);
 }
 
 .progress-bar-good {
-    background-color: #3498db;
+    background: var(--primary-500);
 }
 
 .progress-bar-average {
-    background-color: #f1c40f;
+    background: var(--accent-gold);
 }
 
 .progress-bar-poor {
-    background-color: #e74c3c;
+    background: var(--accent-red);
 }
 
-.table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-    .table th {
-        background-color: #f8f9fa;
-        color: var(--primary-color);
-        font-weight: 600;
-        padding: 0.75rem;
-        text-align: left;
-        border-bottom: 2px solid #dee2e6;
-    }
-
-    .table td {
-        padding: 0.75rem;
-        border-bottom: 1px solid #e9ecef;
-    }
-
-    .table tr:hover td {
-        background: rgba(240, 240, 240, 0.5);
-    }
-
+/* Match Results Table */
 .match-won {
-    background-color: rgba(46, 204, 113, 0.1);
+    background-color: rgba(16, 185, 129, 0.08);
 }
 
 .match-lost {
-    background-color: rgba(231, 76, 60, 0.1);
+    background-color: rgba(239, 68, 68, 0.08);
 }
 
 .match-result {
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--border-radius-sm);
-    font-weight: 500;
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.8rem;
 }
 
-    .match-result.won {
-        background-color: rgba(46, 204, 113, 0.2);
-        color: #27ae60;
-    }
+.match-result.won {
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+}
 
-    .match-result.lost {
-        background-color: rgba(231, 76, 60, 0.2);
-        color: #c0392b;
-    }
+.match-result.lost {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+}
 
 .win-loss-ratio {
-    font-weight: 600;
+    font-weight: 700;
     color: white;
 }

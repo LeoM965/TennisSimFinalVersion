@@ -16,6 +16,7 @@ namespace TennisSim.Services
         public List<Tournament> GetAllTournaments()
         {
             return _context.Tournaments
+                .AsNoTracking()
                 .OrderBy(t => t.StartDate)
                 .ToList();
         }

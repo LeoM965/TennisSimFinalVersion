@@ -22,14 +22,7 @@ namespace TennisSim.Services
 
         public async Task<Draw> CreateNewDrawAsync(Tournament tournament, List<EntryList> entryList, int userId)
         {
-            Console.WriteLine($"[DrawService] Attempting to create draw with UserId: {userId}");
-
-            List<UserName> allUsers = await _context.UserNames.ToListAsync();
-            Console.WriteLine($"[DrawService] All users in database: {string.Join(", ", allUsers.Select(u => $"ID:{u.Id},Username:{u.Username}"))}");
-
             bool userExists = await _context.UserNames.AnyAsync(u => u.Id == userId);
-            Console.WriteLine($"[DrawService] User with ID {userId} exists: {userExists}");
-
             if (!userExists)
             {
                 throw new ArgumentException($"User with ID {userId} does not exist.");

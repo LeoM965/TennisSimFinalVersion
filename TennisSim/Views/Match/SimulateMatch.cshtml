@@ -1,64 +1,152 @@
 ﻿@model MatchViewModel
 @{
-    ViewData["Title"] = "Tennis Match Simulation";
+    ViewData["Title"] = "Match Simulation";
 }
 
 <link rel="stylesheet" href="~/css/TennisMatch.css" />
 
-<div class="tennis-match">
-    <div class="container">
-        <h1 class="text-center mb-4">Tennis Match Simulation</h1>
-        @if (Model?.Match == null)
-        {
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                Match data is not available.
+<div class="match-sim">
+    @if (Model?.Match == null)
+    {
+        <div class="error-card">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Match Not Available</h2>
+            <p>Unable to load match data. Please try again.</p>
+        </div>
+    }
+    else
+    {
+        <!-- Header -->
+        <div class="match-banner">
+            <div class="banner-bg"></div>
+            <div class="banner-content">
+                <span class="tournament-label">@Model.Tournament?.Name</span>
+                <div class="vs-section">
+                    <div class="player-side p1">
+                        <span class="player-name">@Model.Match.Player1?.Name</span>
+                    </div>
+                    <div class="vs-badge">VS</div>
+                    <div class="player-side p2">
+                        <span class="player-name">@Model.Match.Player2?.Name</span>
+                    </div>
+                </div>
+                <div class="match-meta">
+                    <span class="round-tag">@Model.Match.Round</span>
+                    <span class="date-tag"><i class="far fa-calendar"></i> @Model.Match.Date.ToString("MMM dd, yyyy")</span>
+                </div>
             </div>
-        }
-        else
-        {
-            <partial name="_MatchHeader" model="Model" />
-            <partial name="_MatchControls" model="Model" />
-            <partial name="_MatchDisplay" model="Model" />
+        </div>
 
-            <div class="row mb-4">
+        <!-- Controls -->
+        <div class="controls-section">
+            <button id="simulateBtn" class="sim-btn primary"
+                    data-match-id="@Model.Match.Id"
+                    data-player1="@Model.Match.Player1?.Name"
+                    data-player2="@Model.Match.Player2?.Name">
+                <i class="fas fa-play"></i>
+                Start Simulation
+            </button>
+            <button id="skipToResultBtn" class="sim-btn secondary">
+                <i class="fas fa-forward"></i>
+                Skip to Result
+            </button>
+        </div>
+
+        <!-- Live Score Display -->
+        <div id="simulationResults" class="d-none">
+            <div class="live-score-card">
+                <div class="score-header">
+                    <i class="fas fa-broadcast-tower live-icon"></i>
+                    <span>LIVE SCORE</span>
+                </div>
+                <div class="score-body">
+                    <div class="score-players">
+                        <div class="score-player">
+                            <span class="pname">@Model.Match.Player1?.Name</span>
+                            <span class="serve-indicator">🎾</span>
+                        </div>
+                        <div class="score-player">
+                            <span class="pname">@Model.Match.Player2?.Name</span>
+                            <span class="serve-indicator">🎾</span>
+                        </div>
+                    </div>
+                    <div class="score-grid">
+                        <div class="score-col">
+                            <span class="score-title">Sets</span>
+                            <div id="currentSets" class="score-val"></div>
+                        </div>
+                        <div class="score-col">
+                            <span class="score-title">Games</span>
+                            <div id="currentGames" class="score-val"></div>
+                        </div>
+                        <div class="score-col">
+                            <span class="score-title">Points</span>
+                            <div id="currentGame" class="score-val"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <div class="detail-header green">
+                        <i class="fas fa-list-ol"></i> Set Scores
+                    </div>
+                    <div id="setScores" class="detail-body"></div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-header blue">
+                        <i class="fas fa-tennis-ball"></i> Current Game
+                    </div>
+                    <div id="currentGamePoints" class="detail-body"></div>
+                </div>
+            </div>
+
+            <div class="history-card">
+                <div class="detail-header dark">
+                    <i class="fas fa-history"></i> Match History
+                </div>
+                <div id="matchHistory" class="history-body"></div>
+            </div>
+        </div>
+
+        <!-- Player Stats -->
+        <div class="stats-section">
+            <h3 class="stats-title"><i class="fas fa-chart-bar"></i> Player Statistics</h3>
+            <div class="stats-grid">
                 @foreach (var (player, attributes) in new[] {
-            (Model.Match.Player1, Model.Player1Attributes),
-            (Model.Match.Player2, Model.Player2Attributes)
-            })
+                    (Model.Match.Player1, Model.Player1Attributes),
+                    (Model.Match.Player2, Model.Player2Attributes)
+                })
                 {
-                    <div class="col-md-6">
-                        <div class="player-card card">
-                            <div class="card-header">
-                                <h3 class="mb-0">@(player?.Name ?? "Player")</h3>
-                            </div>
-                            <div class="card-body">
-                                @if (attributes?.Any() == true)
+                    <div class="stat-card">
+                        <div class="stat-header">@(player?.Name ?? "Player")</div>
+                        <div class="stat-body">
+                            @if (attributes?.Any() == true)
+                            {
+                                @foreach (var attr in attributes)
                                 {
-                                    foreach (var attr in attributes)
-                                    {
-                                        <div class="attribute-item mb-3">
-                                            <div class="d-flex justify-content-between mb-2">
-                                                <span>@attr.AttributeType</span>
-                                                <span>@attr.Value%</span>
-                                            </div>
-                                            <div class="progress">
-                                                <div class="progress-bar" style="width: @attr.Value%"></div>
-                                            </div>
+                                    <div class="attr-row">
+                                        <div class="attr-info">
+                                            <span class="attr-name">@attr.AttributeType</span>
+                                            <span class="attr-val">@attr.Value%</span>
                                         </div>
-                                    }
+                                        <div class="attr-bar">
+                                            <div class="attr-fill" style="width: @attr.Value%"></div>
+                                        </div>
+                                    </div>
                                 }
-                                else
-                                {
-                                    <p class="text-muted">No statistics available</p>
-                                }
-                            </div>
+                            }
+                            else
+                            {
+                                <p class="no-stats">No statistics available</p>
+                            }
                         </div>
                     </div>
                 }
             </div>
-        }
-    </div>
+        </div>
+    }
 </div>
 
 @section Scripts {
